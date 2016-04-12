@@ -67,8 +67,8 @@ We note that the 95% confidence intervals for the parameter estimates are *phi*:
 ### Stochastic volatility model with simulated data (gpo-sv)
 We consider parameter inference in a stochastic volatility (SV) model given by 
 ``` python
-x_{t+1} = mu + phi * ( x_t - mu ) + sigma_v v_t
-y_t     = exp( 0.5 * x_t ) e_t
+x_{t+1} = mu + phi * ( x_t - mu ) + sigma_v * v_t
+y_t     = exp( 0.5 * x_t ) * e_t
 ```
 where *v_t* and *e_t* are standard Gaussian random variables with correlation *rho*. In this model, we have the parameters {*mu*,*phi*,*sigma_v*,*rho*}. We simulate 1,000 data points using the parameters {0.20,0.90.0.15,-0.70} from the model. We make use of N=100 particles in a bootstrap particle filter and 150 iterations in the GPO algorithm to estimate the parameters {*mu*,*phi*,*sigma_v*}. We make use of the same settings for the GPO algorithm but changes the parameter space to:
 
@@ -134,7 +134,7 @@ We note that the 95% confidence intervals for the parameter estimates are *mu*: 
 
 ## Replication scripts for paper (scripts-draft1)
 
-### Example 1: Stochastic volatility model with Gaussian log-returns (Section 6.1)
+### Example 1: Stochastic volatility model with Gaussian log-returns (Sec 6.1)
 **example1-synthetic-svmodel-gposmc.py** Makes use of GPO with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the solid lines (left) and the solid area (right). 
 
 **example1-synthetic-svmodel-gpoabc.py** Makes use of GPO with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the grey lines (right) when varying the standard deviation of the kernel. 
@@ -143,11 +143,10 @@ We note that the 95% confidence intervals for the parameter estimates are *mu*: 
 
 **example1-synthetic-svmodel-spsa.py** Makes use of the simultaneous perturbation and stochastic approximation (SPSA) algorithm proposed by Spall (1987) < http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4789489&tag=1 > with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 2.
 
-### Example 2: Stochastic volatility model with alpha-stable log-returns (Section 6.2)
+### Example 2: Stochastic volatility model with alpha-stable log-returns (Sec. 6.2)
 **example2-coffee-asvmodel-gpoabc.py** Makes use of GPO with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the solif lines (middle and lower).
 
 **example2-coffee-asvmodel-qpmh2abc.py** Makes use of qPMH2 with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the histograms (middle and lower).
 
-
-### Example 3: Modelling price dependencies between oil futures (Section 6.3)
+### Example 3: Modelling price dependencies between oil futures (Sec. 6.3)
 Code and data are not online due to copyright issues. Please, contact me to obtain the source code and data.
