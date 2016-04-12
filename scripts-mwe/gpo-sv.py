@@ -1,12 +1,10 @@
 ##############################################################################
-##############################################################################
-# Parameter inference in stochastic volatility model
-# using GPO
+# Minimal working example
+# Parameter inference in a stochastic volatility model
+# using Gaussian process optimisation (GPO) with
+# sequential Monte Carlo (SMC)
 #
-# (c) 2015 Johan Dahlin
-# johan.dahlin (at) liu.se
-#
-##############################################################################
+# (c) Johan Dahlin 2016 ( johan.dahlin (at) liu.se )
 ##############################################################################
 
 import numpy   as np
@@ -96,7 +94,7 @@ gpo.bayes(sm, sys, th);
 
 # Parameter estimates
 gpo.thhat
-# rray([ 0.2345679 ,  0.91975309,  0.14166667])
+# array([ 0.2345679 ,  0.91975309,  0.14166667])
 
 # Estimate of inverse Hessian
 gpo.estimateHessian()

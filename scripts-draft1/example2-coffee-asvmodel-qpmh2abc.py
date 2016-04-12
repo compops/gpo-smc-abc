@@ -9,7 +9,10 @@
 ##############################################################################
 ##############################################################################
 
-import numpy   as np
+import Quandl
+import numpy            as np
+import matplotlib.pylab as plt
+
 from   state   import smc
 from   para    import pmh
 from   models  import hwsvalpha_4parameters
@@ -40,9 +43,13 @@ sys.transformY    = "arctan"
 ##############################################################################
 # Generate data
 ##############################################################################
-sys.generateData(fileName="data/pmh_sysid2015/coffee_20130601_20150101.csv",order="y");
-sys.y          = 100 * sys.y;
-sys.ynoiseless = 100 * sys.ynoiseless;
+sys.generateData();
+
+d              = Quandl.get("CHRIS/ICE_KC2", trim_start="2013-06-01", trim_end="2015-01-01")
+logReturns     = 100 * np.diff(np.log(d['Settle']));
+logReturns     = logReturns[~np.isnan(logReturns)];
+sys.y          = np.matrix(logReturns).reshape((sys.T,1))
+sys.ynoiseless = np.matrix(logReturns).reshape((sys.T,1))
 
 
 ##############################################################################

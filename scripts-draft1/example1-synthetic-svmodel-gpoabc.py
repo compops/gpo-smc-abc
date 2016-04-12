@@ -9,8 +9,9 @@
 ##############################################################################
 ##############################################################################
 
+import numpy            as np
+import matplotlib.pylab as plt
 
-import numpy   as np
 from   state   import smc
 from   para    import gpo_gpy
 from   models  import hwsv_4parameters
@@ -40,9 +41,7 @@ sys.transformY    = "none"
 ##############################################################################
 # Generate data
 ##############################################################################
-#sys.generateData(u=np.zeros(sys.T));
-#tmp = np.savetxt('data/gpo_econometrica2015/hwsv_4parameters_syntheticT500.csv',np.hstack((sys.x,sys.y)),delimiter=",")
-sys.generateData(fileName='data/gpo_econometrica2015/hwsv_4parameters_syntheticT500.csv',order="xy");
+sys.generateData(fileName='data/hwsv_4parameters_syntheticT500.csv',order="xy");
 
 
 ##############################################################################

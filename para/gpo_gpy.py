@@ -66,9 +66,6 @@ class stGPO(object):
     stepSize                        = None;
     initPar                         = None;
 
-    # Input design
-    inputDesignMethod               = None;
-
     # Jittering of parameters
     jitterParameters                = None;
     jitteringCovariance             = None;

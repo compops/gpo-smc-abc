@@ -1,12 +1,11 @@
 ##############################################################################
-##############################################################################
-# Parameter inference in stochastic volatility model
-# using GPO
+# Minimal working example
+# Parameter inference in a stochastic volatility model with alpha-stable
+# log-returns using real-world data of the Bitcoin currency
+# using Gaussian process optimisation (GPO) with
+# sequential Monte Carlo (SMC)
 #
-# (c) 2015 Johan Dahlin
-# johan.dahlin (at) liu.se
-#
-##############################################################################
+# (c) Johan Dahlin 2016 ( johan.dahlin (at) liu.se )
 ##############################################################################
 
 import Quandl

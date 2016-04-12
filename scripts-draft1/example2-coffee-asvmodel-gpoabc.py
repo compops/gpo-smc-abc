@@ -9,8 +9,10 @@
 ##############################################################################
 ##############################################################################
 
+import Quandl
+import numpy            as np
+import matplotlib.pylab as plt
 
-import numpy   as np
 from   state   import smc
 from   para    import gpo_gpy
 from   models  import hwsvalpha_4parameters
@@ -38,9 +40,13 @@ sys.transformY    = "arctan"
 ##############################################################################
 # Generate data
 ##############################################################################
-sys.generateData(fileName="data/pmh_sysid2015/coffee_20130601_20150101.csv",order="y");
-sys.y          = 100 * sys.y;
-sys.ynoiseless = 100 * sys.ynoiseless;
+sys.generateData();
+
+d              = Quandl.get("CHRIS/ICE_KC2", trim_start="2013-06-01", trim_end="2015-01-01")
+logReturns     = 100 * np.diff(np.log(d['Settle']));
+logReturns     = logReturns[~np.isnan(logReturns)];
+sys.y          = np.matrix(logReturns).reshape((sys.T,1))
+sys.ynoiseless = np.matrix(logReturns).reshape((sys.T,1))
 
 ##############################################################################
 # Setup the parameters
@@ -159,7 +165,9 @@ sm.nPathsLimit      = 10;
 sm.ffbsiPS(th)
 
 # Plot the state estimate
-figure(1); plot(sys.y); plot(sm.xhats)
+plt.figure(1); 
+plt.plot(sys.y); 
+plt.plot(sm.xhats)
 
 # Write state estimate to file
 sm.writeToFile()

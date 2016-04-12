@@ -1,12 +1,10 @@
 ##############################################################################
-##############################################################################
-# Parameter inference in stochastic volatility model
-# using GPO
+# Minimal working example
+# Parameter inference in a linear Gaussian state space (LGSS) model
+# using Gaussian process optimisation (GPO) with
+# sequential Monte Carlo (SMC) and approximate Bayesian computations (ABC)
 #
-# (c) 2015 Johan Dahlin
-# johan.dahlin (at) liu.se
-#
-##############################################################################
+# (c) Johan Dahlin 2016 ( johan.dahlin (at) liu.se )
 ##############################################################################
 
 import numpy   as np
