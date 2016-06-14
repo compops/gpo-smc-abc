@@ -121,6 +121,7 @@ class smcSampler(object):
 
     # Particle smoothers
     flPS         = proto_flPS
+    ffbsiPS      = proto_ffbsiPS
 
     # Wrapper for trajectory reconstruction
     reconstructTrajectories = reconstructTrajectories_helper;

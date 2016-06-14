@@ -66,6 +66,9 @@ class stGPO(object):
     stepSize                        = None;
     initPar                         = None;
 
+    # Input design
+    inputDesignMethod               = None;
+
     # Jittering of parameters
     jitterParameters                = None;
     jitteringCovariance             = None;
@@ -117,6 +120,7 @@ class stGPO(object):
         thhatHessian    = np.zeros((self.maxIter,self.nPars,self.nPars))
         obmax           = np.zeros((self.maxIter+1,1))
         hyperParams     = np.zeros((self.maxIter,3+self.nPars))
+        xhatf           = np.zeros((self.maxIter+1,sys.T))
 
         #=====================================================================
         # Pre-run using random sampling to estimate hyperparameters
@@ -149,7 +153,7 @@ class stGPO(object):
 
             # Evaluate the objective function in the parameters
             thSys.storeParameters(thPre[kk,:],sys);
-            obPre[kk] = self.evaluateObjectiveFunction( sm, sys, thSys );
+            obPre[kk], tmp1 = self.evaluateObjectiveFunction( sm, sys, thSys );
 
             # Transform and save the parameters
             thSys.transform();
@@ -217,7 +221,7 @@ class stGPO(object):
             #------------------------------------------------------------------
             # Evalute the objective function
             #------------------------------------------------------------------
-            obp[self.iter] = self.evaluateObjectiveFunction( sm, sys, thSys );
+            obp[self.iter], xhatf[self.iter,:] = self.evaluateObjectiveFunction( sm, sys, thSys );
 
             # Collect the sampled data (if the objective is finite)
             idxNotNaN = ~np.isnan( obp[range(self.iter),:] );
@@ -352,6 +356,7 @@ class stGPO(object):
         self.m              = m;
         self.x              = x;
         self.y              = y;
+        self.xhatf          = xhatf;
         self.ynorm          = ynorm;
         self.hp             = hyperParams;
 
@@ -439,20 +444,23 @@ class stGPO(object):
 
             # Sample the log-likelihood in the proposed parameters
             sm.filter(thSys)
-            out  = sm.ll;
+            ob    = sm.ll
+            xhatf = sm.xhatf[:,0]
 
         elif (self.optType == "MAPparameterEstimation"):
 
             # Sample the log-target in the proposed parameters
             sm.filter(thSys)
-            out  = sm.ll + thSys.prior();
+            ob    = sm.ll + thSys.prior()
+            xhatf = sm.xhatf[:,0]
 
         elif(self.optType == "InputDesign"):
 
             # Sample the log-likelihood in the proposed parameters
-            out  = self.inputDesignMethod( sm, thSys );
+            ob    = self.inputDesignMethod( sm, thSys )
+            xhatf = 0.0
 
-        return out
+        return ob, xhatf
 
     ##########################################################################
     # Helper: estimate the Hessian
