@@ -112,6 +112,15 @@ def loguninormpdf(x,mu,sigma):
     return -0.5 * np.log( 2.0 * np.pi * sigma**2) - 0.5 * (x-mu)**2 * sigma**(-2);
 
 ##############################################################################
+# Calculate the log-pdf of a univariate quasi-Cauchy distribution
+##############################################################################
+def loguniqcauchypdf(x,mu,h):
+    u  = ( x - mu ) / h
+    K  = -2.0 * np.log( 1.0 + 0.25 * np.pi**2 * u**2 )
+
+    return K / h
+
+##############################################################################
 # Calculate the log-pdf of a multivariate Gaussian with mean vector mu and covariance matrix S
 ##############################################################################
 def lognormpdf(x,mu,S):

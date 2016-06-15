@@ -54,7 +54,7 @@ def estimateLogVolatility ( data ):
     sm.filter          = sm.bPF
     sm.nPart           = 100
     sm.resampFactor    = 2.0
-    sm.genInitialState = True
+    sm.genInitialState = True   
     sm.xo              = sys.xo
     th.xo              = sys.xo
           
@@ -69,10 +69,11 @@ def estimateLogVolatility ( data ):
     sm.calcGradientFlag = False
     sm.calcHessianFlag  = False
     sm.nPaths           = 50
+    sm.rho              = 5.0
     sm.nPathsLimit      = 10
     sm.ffbsiPS(th)    
     
-    return sm.xhats, gpo.thhat
+    return sm.xhats[:,0], gpo.thhat
 
 
 def computeValueAtRisk( x, d, alpha ):
@@ -162,7 +163,7 @@ T              = log_returns.shape[0]
 nAssets        = log_returns.shape[1]
 
 # Estimate the log-volatility
-nAssets = 1
+nAssets = 2
 log_volatility          = np.zeros((T,nAssets))
 models                  = np.zeros((4,nAssets))
 

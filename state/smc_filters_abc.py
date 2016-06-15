@@ -111,6 +111,23 @@ def proto_pf_abc(classSMC,sys):
 
             # Calculate log-likelihood
             ll[tt] = wmax + np.log( np.sum( w[:,tt] ) ) - np.log( classSMC.nPart );
+        
+        elif ( classSMC.weightdist == "qcauchy" ):
+            
+            # Estimate the bandwidth h of the kernel
+            Sadaptive = np.var( v[:,tt] )
+            Padaptive = 3.0 / ( 8.0 * np.sqrt( np.pi ) ) * Sadaptive**(-5.0/2.0);
+            hadaptive = ( ( 5.0 * np.pi**4 ) / ( 128 * classSMC.nPart * Padaptive ) )**( 1.0/5.0 )
+            
+            # Quasi-Cauchy ABC with adaptive epsilon
+            w[:,tt] = loguniqcauchypdf( sys.y[tt], v[:,tt], hadaptive );
+
+            # Rescale log-weights and recover weights
+            wmax    = np.max( w[:,tt] );
+            w[:,tt] = np.exp( w[:,tt] - wmax );
+
+            # Calculate log-likelihood
+            ll[tt] = wmax + np.log( np.sum( w[:,tt] ) ) - np.log( classSMC.nPart );            
 
         #======================================================================
         # Calculate state estimate
