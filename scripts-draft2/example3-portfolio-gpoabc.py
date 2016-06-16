@@ -4,7 +4,7 @@ import scipy   as sp
 
 from   state   import smc
 from   para    import gpo_gpy
-from   models  import hwsv_4parameters
+from   models  import hwsvalpha_4parameters
 
 from models.copula       import studentt
 from models.models_dists import multiTSimulate
@@ -18,30 +18,34 @@ def estimateLogVolatility ( data ):
     gpo               = gpo_gpy.stGPO();
     
     # Setup the system
-    sys               = hwsv_4parameters.ssm()
+    sys               = hwsvalpha_4parameters.ssm()
     sys.par           = np.zeros((sys.nPar,1))
-    sys.T             = len(data)
     sys.xo            = 0.0
+    sys.T             = len(data)
     sys.version       = "standard"
+    sys.transformY    = "none"
     
-    # Generate data
-    sys.generateData(u=np.zeros(sys.T))
+    # Load data
+    sys.generateData()
+    sys.y          = np.array( data ).reshape((sys.T,1))
+    sys.ynoiseless = np.array( data ).reshape((sys.T,1))
    
     # Setup the parameters
-    th               = hwsv_4parameters.ssm()
-    th.nParInference = 4;
-    th.copyData(sys);
+    th               = hwsvalpha_4parameters.ssm()
+    th.nParInference = 4
+    th.copyData(sys)
     th.version       = "standard"
+    th.transformY    = "arctan"
     
     # Setup the GPO algorithm
     gpo.verbose                         = True
     
-    gpo.initPar                         = np.array([ 0.20, 0.95, 0.14, -0.50 ])
-    gpo.upperBounds                     = np.array([ 0.50, 1.00, 0.50,  1.00 ])
-    gpo.lowerBounds                     = np.array([-0.50, 0.80, 0.05, -1.00 ])
+    gpo.initPar                         = np.array([ 0.20, 0.95, 0.14,  1.90 ])
+    gpo.upperBounds                     = np.array([ 2.00, 1.00, 1.00,  2.00 ])
+    gpo.lowerBounds                     = np.array([-2.00, 0.80, 0.05,  1.00 ])
     
-    gpo.preIter                         = 25    
-    gpo.maxIter                         = 50    
+    gpo.preIter                         = 100    
+    gpo.maxIter                         = 150    
     
     gpo.jitteringCovariance             = 0.01 * np.diag(np.ones(th.nParInference))
     gpo.preSamplingMethod               = "latinHyperCube"
@@ -51,15 +55,15 @@ def estimateLogVolatility ( data ):
     gpo.EstimateHessianEveryIteration   = False
     
     # Setup the SMC algorithm
-    sm.filter          = sm.bPF
-    sm.nPart           = 100
-    sm.resampFactor    = 2.0
-    sm.genInitialState = True   
-    sm.xo              = sys.xo
-    th.xo              = sys.xo
-          
-    # Load data
-    sys.y = data
+    sm.filter                           = sm.bPFabc
+    
+    sm.nPart                            = 5000
+    sm.genInitialState                  = True
+    sm.weightdist                       = "gaussian"
+    sm.tolLevel                         = 0.10
+    
+    # Add noise to data for noisy ABC
+    th.makeNoisy(sm)
     
     # Estimate parameters
     gpo.bayes(sm, sys, th)
@@ -100,10 +104,9 @@ def computeValueAtRisk( x, d, alpha ):
     th.uhat = uhat.transpose()
     
     # Find initalisation by Kendall's tau for Student t copula
-    rhoHat   = np.zeros((nAssets,nAssets))
+    rhoHat   = np.ones((nAssets,nAssets))
     
     for ii in range(nAssets):
-        rhoHat[ii,ii] = 2.0 / np.pi * np.arcsin( stats.kendalltau( th.uhat[:,ii], th.uhat[:,ii] ) )[0]
         for jj in range(ii):
             rhoHat[ii,jj] = 2.0 / np.pi * np.arcsin( stats.kendalltau( th.uhat[:,ii], th.uhat[:,jj] ) )[0]
             rhoHat[jj,ii] = rhoHat[ii,jj]
@@ -117,7 +120,7 @@ def computeValueAtRisk( x, d, alpha ):
             kk += 1;
     
     # Use BFGS to optimize the log-posterior to fit the copula   
-    b   = b=[(0.1,50.0)] + [(-0.90,0.90)]*nAssets
+    b   = [(0.1,50.0)] + [(-0.90,0.90)]*(nAssets-1)
     res = optimize.fmin_l_bfgs_b(th.evaluateLogPosteriorBFGS, (th.par).transpose(), approx_grad=1, bounds=b )
     
     # Store parameters and construct correlation matrix
@@ -158,7 +161,7 @@ def computeValueAtRisk( x, d, alpha ):
 ##############################################################################
 
 # Get the log-returns
-log_returns    = np.loadtxt('data/30_industry_portfolios_marketweighted.txt',skiprows=1)[:,1:]
+log_returns    = np.loadtxt('data/gpo_jbes2016/30_industry_portfolios_marketweighted.txt',skiprows=1)[:,1:]
 T              = log_returns.shape[0]
 nAssets        = log_returns.shape[1]
 
@@ -173,7 +176,7 @@ for ii in range(nAssets):
 
 
 # Compute the VAR
-correlation, value_at_risk = computeValueAtRisk(log_volatility, log_returns, 0.01)
+correlation, value_at_risk = computeValueAtRisk(log_volatility, log_returns[:,0:nAssets], 0.01)
 
 
 subplot(3,1,1)
