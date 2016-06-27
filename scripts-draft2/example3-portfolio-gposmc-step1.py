@@ -68,15 +68,15 @@ def estimateLogVolatility ( data ):
 
 # Get the log-returns
 log_returns    = np.loadtxt('data/30_industry_portfolios_marketweighted.txt',skiprows=1)[:,1:]
-T              = log_returns.shape[0]
+T              = 805 #log_returns.shape[0]
 nAssets        = log_returns.shape[1]
 
 # Estimate the log-volatility
 log_volatility          = np.zeros((T,nAssets))
-models                  = np.zeros((3,nAssets))
+models                  = np.zeros((4,nAssets))
 
 for ii in range(nStart*5,(nStart+1)*5):
-    log_volatility[:,ii], models[:,ii] = estimateLogVolatility( log_returns[:,ii] )
+    log_volatility[:,ii], models[:,ii] = estimateLogVolatility( log_returns[0:T,ii] )
 
 import pandas
 fileOut = pandas.DataFrame(log_volatility)
