@@ -73,7 +73,7 @@ nAssets        = log_returns.shape[1]
 
 # Estimate the log-volatility
 log_volatility          = np.zeros((T,nAssets))
-models                  = np.zeros((4,nAssets))
+models                  = np.zeros((3,nAssets))
 
 for ii in range(nStart*5,(nStart+1)*5):
     log_volatility[:,ii], models[:,ii] = estimateLogVolatility( log_returns[0:T,ii] )
