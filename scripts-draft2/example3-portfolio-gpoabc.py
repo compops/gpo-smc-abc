@@ -44,8 +44,8 @@ def estimateLogVolatility ( data ):
     gpo.upperBounds                     = np.array([ 2.00, 1.00, 1.00,  2.00 ])
     gpo.lowerBounds                     = np.array([-2.00, 0.80, 0.05,  1.00 ])
     
-    gpo.preIter                         = 100    
-    gpo.maxIter                         = 150    
+    gpo.preIter                         = 50    
+    gpo.maxIter                         = 100    
     
     gpo.jitteringCovariance             = 0.01 * np.diag(np.ones(th.nParInference))
     gpo.preSamplingMethod               = "latinHyperCube"
@@ -120,10 +120,14 @@ def computeValueAtRisk( x, d, alpha ):
             kk += 1;
     
     # Use BFGS to optimize the log-posterior to fit the copula   
-    b   = [(0.1,50.0)] + [(-0.90,0.90)]*(nAssets-1)
-    res = optimize.fmin_l_bfgs_b(th.evaluateLogPosteriorBFGS, (th.par).transpose(), approx_grad=1, bounds=b )
+    #b   = [(0.1,50.0)] + [(-0.90,0.90)]*(len(th.par)-1)
+    #res = optimize.fmin_l_bfgs_b(th.evaluateLogPosteriorBFGS, (th.par).transpose(), approx_grad=1, bounds=b )
+    b   = [(0.1,50.0)]
+    res = optimize.fmin_l_bfgs_b(th.evaluateLogPosteriorBFGS, 1.0, approx_grad=1, bounds=b )
+
     
     # Store parameters and construct correlation matrix
+    th.nParInference = 1
     th.storeParameters(res[0],th)
     th.constructCorrelationMatrix( nAssets )
            
@@ -133,7 +137,7 @@ def computeValueAtRisk( x, d, alpha ):
     usim         = (stats.t).cdf( foo, th.par[0] )
     
     # Compute spearman correlation    
-    corrSpearman = np.zeros((int(0.5*(nAssets**2-nAssets)),1))    
+    corrSpearman = np.ones((int(0.5*(nAssets**2-nAssets)),1))    
     kk = 0
     for ii in range(nAssets):
         for jj in range(ii+1,nAssets):
@@ -152,7 +156,7 @@ def computeValueAtRisk( x, d, alpha ):
         esim[ii,:] = (stats.norm).ppf ( usim[:,ii] )
         for tt in range(th.T):
             varEst[tt,ii] = np.percentile( esim[ii,:] * np.exp( ( x[:,ii] )[tt] * 0.5 ), 100.0 * alpha )
-
+    
     # Return VAR estimates
     return corrSpearman, varEst
 
@@ -161,38 +165,29 @@ def computeValueAtRisk( x, d, alpha ):
 ##############################################################################
 
 # Get the log-returns
-log_returns    = np.loadtxt('data/gpo_jbes2016/30_industry_portfolios_marketweighted.txt',skiprows=1)[:,1:]
+log_returns    = np.loadtxt('data/30_industry_portfolios_marketweighted.txt',skiprows=1)[:,1:]
 T              = log_returns.shape[0]
 nAssets        = log_returns.shape[1]
 
 # Estimate the log-volatility
-nAssets = 2
 log_volatility          = np.zeros((T,nAssets))
 models                  = np.zeros((4,nAssets))
 
-for ii in range(nAssets):
-    log_volatility[:,ii], models[:,ii] = estimateLogVolatility( log_returns[:,ii] )
+##############################################################################
+# Load file
+##############################################################################
 
-
+#for ii in range(nAssets):
+#    log_volatility[:,ii], models[:,ii] = estimateLogVolatility( log_returns[:,ii] )
 
 # Compute the VAR
-correlation, value_at_risk = computeValueAtRisk(log_volatility, log_returns[:,0:nAssets], 0.01)
+correlation, value_at_risk = computeValueAtRisk(log_volatility000, log_returns000[:,0:nAssets], 0.01)
 
+plot(np.mean(-value_at_risk,axis=1))
+plot(np.mean(log_returns[:,0:nAssets],axis=1),'k.')
+plot(np.mean(value_at_risk,axis=1))
 
-subplot(3,1,1)
-plot(dates_1[-T:],asset_1[-T:])
-plot(dates_2[-T:],asset_2[-T:])
-plot(dates_3[-T:],asset_3[-T:])
-legend(("USA","Asien","Sverige"))
+ab1 = np.mean( np.mean(-value_at_risk,axis=1) < np.mean(log_returns[:,0:nAssets],axis=1) )
+ab2 = np.mean( np.mean(value_at_risk,axis=1) > np.mean(log_returns[:,0:nAssets],axis=1) )
 
-subplot(3,1,2)
-plot(dates_1[-T:],log_volatility[:,0])
-plot(dates_2[-T:],log_volatility[:,1])
-plot(dates_3[-T:],log_volatility[:,2])
-
-subplot(3,1,3)
-plot(dates_1[-T:],-value_at_risk[:,0])
-plot(dates_2[-T:],-value_at_risk[:,1])
-plot(dates_3[-T:],-value_at_risk[:,2])
-plot(dates_3[-T:],-np.mean(value_at_risk,axis=1),'k')
-
+ab1 + ab2

@@ -1,7 +1,7 @@
 import numpy   as np
 from   state   import smc
 from   para    import gpo_gpy
-from   models  import hwsvalpha_4parameters
+from   models  import hwsv_4parameters
 
 import os
 nStart = int( os.sys.argv[1] );
@@ -12,7 +12,7 @@ def estimateLogVolatility ( data ):
     gpo               = gpo_gpy.stGPO();
     
     # Setup the system
-    sys               = hwsvalpha_4parameters.ssm()
+    sys               = hwsv_4parameters.ssm()
     sys.par           = np.zeros((sys.nPar,1))
     sys.xo            = 0.0
     sys.T             = len(data)
@@ -25,8 +25,8 @@ def estimateLogVolatility ( data ):
     sys.ynoiseless = np.array( data ).reshape((sys.T,1))
    
     # Setup the parameters
-    th               = hwsvalpha_4parameters.ssm()
-    th.nParInference = 4
+    th               = hwsv_4parameters.ssm()
+    th.nParInference = 3
     th.copyData(sys)
     th.version       = "standard"
     th.transformY    = "arctan"
@@ -34,9 +34,9 @@ def estimateLogVolatility ( data ):
     # Setup the GPO algorithm
     gpo.verbose                         = True
     
-    gpo.initPar                         = np.array([ 0.20, 0.95, 0.14,  1.90 ])
-    gpo.upperBounds                     = np.array([ 2.00, 1.00, 1.00,  2.00 ])
-    gpo.lowerBounds                     = np.array([-2.00, 0.80, 0.05,  1.00 ])
+    gpo.initPar                         = np.array([ 0.20, 0.95, 0.14 ])
+    gpo.upperBounds                     = np.array([ 2.00, 1.00, 1.00 ])
+    gpo.lowerBounds                     = np.array([-2.00, 0.80, 0.05 ])
     
     gpo.preIter                         = 50    
     gpo.maxIter                         = 100    
@@ -49,15 +49,9 @@ def estimateLogVolatility ( data ):
     gpo.EstimateHessianEveryIteration   = False
     
     # Setup the SMC algorithm
-    sm.filter                           = sm.bPFabc
-    
-    sm.nPart                            = 5000
+    sm.filter                           = sm.bPF
+    sm.nPart                            = 1000
     sm.genInitialState                  = True
-    sm.weightdist                       = "gaussian"
-    sm.tolLevel                         = 0.10
-    
-    # Add noise to data for noisy ABC
-    th.makeNoisy(sm)
     
     # Estimate parameters
     gpo.bayes(sm, sys, th)
@@ -79,14 +73,14 @@ nAssets        = log_returns.shape[1]
 
 # Estimate the log-volatility
 log_volatility          = np.zeros((T,nAssets))
-models                  = np.zeros((4,nAssets))
+models                  = np.zeros((3,nAssets))
 
 for ii in range(nStart*5,(nStart+1)*5):
     log_volatility[:,ii], models[:,ii] = estimateLogVolatility( log_returns[:,ii] )
 
 import pandas
 fileOut = pandas.DataFrame(log_volatility)
-fileOut.to_csv('results/example3-portfolio-gpoabc-step1-volatility' + str(nStart) + '.csv')
+fileOut.to_csv('results/example3-portfolio-gposmc-step1-volatility' + str(nStart) + '.csv')
 
 fileOut = pandas.DataFrame(models)
-fileOut.to_csv('results/example3-portfolio-gpoabc-step1-models' + str(nStart) + '.csv')
+fileOut.to_csv('results/example3-portfolio-gposmc-step1-models' + str(nStart) + '.csv')
