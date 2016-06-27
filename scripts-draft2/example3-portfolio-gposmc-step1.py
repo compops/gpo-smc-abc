@@ -55,12 +55,13 @@ def estimateLogVolatility ( data ):
     
     # Estimate parameters
     gpo.bayes(sm, sys, th)
+    gpo.estimateHessian()
     
     # Estimate the log-volatility
     th.storeParameters( gpo.thhat, sys)
     sm.filter(th)    
     
-    return sm.xhatf[:,0], gpo.thhat
+    return sm.xhatf[:,0], gpo.thhat, np.diag(-gpo.invHessianEstimate)
 
 ##############################################################################
 ##############################################################################
@@ -74,9 +75,10 @@ nAssets        = log_returns.shape[1]
 # Estimate the log-volatility
 log_volatility          = np.zeros((T,nAssets))
 models                  = np.zeros((3,nAssets))
+modelsVar               = np.zeros((3,nAssets))
 
 for ii in range(nStart*5,(nStart+1)*5):
-    log_volatility[:,ii], models[:,ii] = estimateLogVolatility( log_returns[0:T,ii] )
+    log_volatility[:,ii], models[:,ii], modelsVar[:,ii] = estimateLogVolatility( log_returns[0:T,ii] )
 
 import pandas
 fileOut = pandas.DataFrame(log_volatility)
@@ -84,3 +86,6 @@ fileOut.to_csv('results/example3-portfolio-gposmc-step1-volatility' + str(nStart
 
 fileOut = pandas.DataFrame(models)
 fileOut.to_csv('results/example3-portfolio-gposmc-step1-models' + str(nStart) + '.csv')
+
+fileOut = pandas.DataFrame(modelsVar)
+fileOut.to_csv('results/example3-portfolio-gposmc-step1-modelsVar' + str(nStart) + '.csv')
