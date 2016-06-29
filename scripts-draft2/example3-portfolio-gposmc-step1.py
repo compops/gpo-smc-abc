@@ -21,15 +21,14 @@ def estimateLogVolatility ( data ):
     
     # Load data
     sys.generateData()
-    sys.y          = np.array( data ).reshape((sys.T,1))
-    sys.ynoiseless = np.array( data ).reshape((sys.T,1))
+    sys.y             = np.array( data ).reshape((sys.T,1))
    
     # Setup the parameters
     th               = hwsv_4parameters.ssm()
     th.nParInference = 3
     th.copyData(sys)
     th.version       = "standard"
-    th.transformY    = "arctan"
+    th.transformY    = "none"
     
     # Setup the GPO algorithm
     gpo.verbose                         = True
@@ -39,12 +38,12 @@ def estimateLogVolatility ( data ):
     gpo.lowerBounds                     = np.array([-2.00, 0.80, 0.05 ])
     
     gpo.preIter                         = 50    
-    gpo.maxIter                         = 100    
+    gpo.maxIter                         = 150    
     
     gpo.jitteringCovariance             = 0.01 * np.diag(np.ones(th.nParInference))
     gpo.preSamplingMethod               = "latinHyperCube"
     
-    gpo.EstimateHyperparametersInterval = 50
+    gpo.EstimateHyperparametersInterval = 25
     gpo.EstimateThHatEveryIteration     = False
     gpo.EstimateHessianEveryIteration   = False
     
