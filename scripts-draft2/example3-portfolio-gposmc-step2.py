@@ -120,7 +120,7 @@ def computeValueAtRisk( x, d, Test, alpha ):
             varEst[tt,ii] = np.percentile( esim[ii,:] * np.exp( ( x[:,ii] )[tt] * 0.5 ), 100.0 * alpha )
     
     # Return VAR estimates
-    return corrSpearman, varEst
+    return res[0], corrSpearman, varEst
 
 ##############################################################################
 ##############################################################################
@@ -142,7 +142,7 @@ for ii in range(nAssets):
     log_volatility[:,ii] = estimateLogVolatility( log_returns[0:T,ii], models[:,ii] )
 
 # Compute the VAR
-correlation, value_at_risk = computeValueAtRisk(log_volatility, log_returns[:,0:nAssets], Test, 0.01)
+dof, correlation, value_at_risk = computeValueAtRisk(log_volatility, log_returns[:,0:nAssets], Test, 0.01)
 
 # Plot
 plot(np.mean(value_at_risk[10:],axis=1))
