@@ -120,4 +120,4 @@ def evtECDF_kernel( quantiles, gpa, data, proportion=0.10 ):
     print(f1)
     out = f1.fit( quantiles )[0]
 
-    return( out, thUpper, thLower, varUpper, varLower, f1, f2 )
+    return( out, ( thUpper, thLower, varUpper, varLower ), f1, f2 )
