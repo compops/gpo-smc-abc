@@ -23,8 +23,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
 
-from misc.portfolio_helpers import getStockData, estModel, estSVG, estVaR
-from misc.portfolio_helpers import ensure_dir
+from misc.portfolio import getOilData, estModel, estVol, estVaR
+from misc.portfolio import ensure_dir
+
 
 
 ##############################################################################
