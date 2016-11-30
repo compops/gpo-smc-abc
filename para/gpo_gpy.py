@@ -2,11 +2,10 @@
 ##############################################################################
 # Routines for
 # Parameter inference using GPO
-# Version 2014-12-03
 #
-# Copyright (c) 2014 Johan Dahlin [ johan.dahlin (at) liu.se ]
-# Distributed under the MIT license.
-#
+# Copyright (c) 2016 Johan Dahlin 
+# liu (at) johandahlin.com
+# 
 ##############################################################################
 ##############################################################################
 
@@ -18,8 +17,6 @@ import matplotlib.pylab as plt
 import GPy
 import pandas
 
-# sudo pip install sobol
-# sudo pip install pyDOE
 from   DIRECT     import solve
 from   pyDOE      import lhs
 from   sobol      import i4_sobol

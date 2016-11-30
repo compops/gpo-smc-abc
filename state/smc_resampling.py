@@ -2,10 +2,9 @@
 ##############################################################################
 # Routines for
 # Resampling
-# Version 2015-03-12
 #
-# Copyright (c) 2015 Johan Dahlin [ johan.dahlin (at) liu.se ]
-# Distributed under the MIT license.
+# Copyright (c) 2016 Johan Dahlin
+# liu (at) johandahlin.com
 #
 ##############################################################################
 ##############################################################################
@@ -16,9 +15,11 @@ import scipy.weave as weave
 ##############################################################################
 # Resampling for SMC sampler: Multinomial
 ##############################################################################
-def resampleMultinomial(w, N=0, u=None ):
+
+
+def resampleMultinomial(w, N=0, u=None):
     code = \
-    """ py::list ret;
+        """ py::list ret;
 	for(int kk = 0; kk < N; kk++)  // For each particle
         {
             int jj = 0;
@@ -31,25 +32,28 @@ def resampleMultinomial(w, N=0, u=None ):
         }
 	return_val = ret;
     """
-    H = len(w);
-    if N==0:
-        N = H;
+    H = len(w)
+    if N == 0:
+        N = H
 
-    if ( u == None ):
-        u  = np.random.uniform(0.0,1.0,N);
+    if (u == None):
+        u = np.random.uniform(0.0, 1.0, N)
     else:
-        u = float(u);
+        u = float(u)
 
-    ww = ( np.cumsum(w) / np.sum(w) ).astype(float);
-    idx = weave.inline(code,['u','H','ww','N'], type_converters=weave.converters.blitz)
-    return np.array( idx ).astype(int);
+    ww = (np.cumsum(w) / np.sum(w)).astype(float)
+    idx = weave.inline(code, ['u', 'H', 'ww', 'N'],
+                       type_converters=weave.converters.blitz)
+    return np.array(idx).astype(int)
 
 ##############################################################################
 # Resampling for SMC sampler: Stratified
 ##############################################################################
-def resampleStratified( w, N=0, u=None ):
+
+
+def resampleStratified(w, N=0, u=None):
     code = \
-    """ py::list ret;
+        """ py::list ret;
 	int jj = 0;
         for(int kk = 0; kk < N; kk++)
         {
@@ -63,25 +67,28 @@ def resampleStratified( w, N=0, u=None ):
         }
 	return_val = ret;
     """
-    H = len(w);
-    if N==0:
-        N = H;
+    H = len(w)
+    if N == 0:
+        N = H
 
-    if ( u == None ):
-        u   = ( np.random.uniform(0.0,1.0,(N,1)) ).astype(float);
+    if (u == None):
+        u = (np.random.uniform(0.0, 1.0, (N, 1))).astype(float)
     else:
-        u = float(u);
+        u = float(u)
 
-    ww  = ( np.cumsum(w) / np.sum(w) ).astype(float);
-    idx = weave.inline(code,['u','H','ww','N'], type_converters=weave.converters.blitz)
-    return np.array( idx ).astype(int);
+    ww = (np.cumsum(w) / np.sum(w)).astype(float)
+    idx = weave.inline(code, ['u', 'H', 'ww', 'N'],
+                       type_converters=weave.converters.blitz)
+    return np.array(idx).astype(int)
 
 ##############################################################################
 # Resampling for SMC sampler: Systematic
 ##############################################################################
-def resampleSystematic( w, N=0, u=None ):
+
+
+def resampleSystematic(w, N=0, u=None):
     code = \
-    """ py::list ret;
+        """ py::list ret;
 	int jj = 0;
         for(int kk = 0; kk < N; kk++)
         {
@@ -95,18 +102,19 @@ def resampleSystematic( w, N=0, u=None ):
         }
 	return_val = ret;
     """
-    H = len(w);
-    if N==0:
-        N = H;
+    H = len(w)
+    if N == 0:
+        N = H
 
-    if ( u == None ):
-        u   = float( np.random.uniform() );
+    if (u == None):
+        u = float(np.random.uniform())
     else:
-        u = float(u);
+        u = float(u)
 
-    ww  = ( np.cumsum(w) / np.sum(w) ).astype(float);
-    idx = weave.inline(code,['u','H','ww','N'], type_converters=weave.converters.blitz )
-    return np.array( idx ).astype(int);
+    ww = (np.cumsum(w) / np.sum(w)).astype(float)
+    idx = weave.inline(code, ['u', 'H', 'ww', 'N'],
+                       type_converters=weave.converters.blitz)
+    return np.array(idx).astype(int)
 
 ########################################################################
 # End of file

@@ -2,10 +2,9 @@
 ##############################################################################
 # Default settings and helpers for
 # Maximum-likelihood inference
-# Version 2014-12-03
 #
-# Copyright (c) 2014 Johan Dahlin [ johan.dahlin (at) liu.se ]
-# Distributed under the MIT license.
+# Copyright (c) 2016 Johan Dahlin 
+# liu (at) johandahlin.com
 #
 ##############################################################################
 ##############################################################################

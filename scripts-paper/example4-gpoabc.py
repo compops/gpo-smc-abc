@@ -15,12 +15,16 @@
 ##############################################################################
 ##############################################################################
 
+import sys
+sys.path.insert(0, '/media/sf_home/src/gpo-abc2015') 
+
 # Load packages and helpers
 import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
 
 from misc.portfolio_helpers import getStockData, estModel, estSVG, estVaR
+from misc.portfolio_helpers import ensure_dir
 
 
 ##############################################################################
@@ -89,6 +93,8 @@ np.sum(np.mean(var[Test:], axis=1) >
 #############################################################################
 # Write results to file
 ##############################################################################
+
+ensure_dir(output_file + '-volatility.csv')
 
 # Log-volatility
 fileOut = pd.DataFrame(log_vol)

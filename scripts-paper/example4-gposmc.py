@@ -5,7 +5,7 @@
 #
 # The SV model is inferred using the GPO-SMC algorithm. The dependence between
 # the assets are modelled using a Student's t-copula.
-# 
+#
 #
 # For more details, see https://github.com/compops/gpo-abc2015
 #
@@ -15,12 +15,16 @@
 ##############################################################################
 ##############################################################################
 
+import sys
+sys.path.insert(0, '/media/sf_home/src/gpo-abc2015')
+
 # Load packages and helpers
 import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
 
 from misc.portfolio_helpers import getStockData, estModel, estSVG, estVaR
+from misc.portfolio_helpers import ensure_dir
 
 
 ##############################################################################
@@ -38,8 +42,8 @@ log_ret, T, Test, nAssets = getStockData()
 # Settings
 ##############################################################################
 
-settings = {'gpo_initPar':     np.array([ 0.00, 0.95, 0.50]),
-            'gpo_upperBounds': np.array([ 5.00, 0.99, 1.00]),
+settings = {'gpo_initPar':     np.array([0.00, 0.95, 0.50]),
+            'gpo_upperBounds': np.array([5.00, 0.99, 1.00]),
             'gpo_lowerBounds': np.array([-5.00, 0.00, 0.10]),
             'gpo_estHypParInterval': 25,
             'gpo_preIter': 50,
@@ -57,7 +61,8 @@ m = np.zeros((3, nAssets))
 m_var = np.zeros((3, nAssets))
 
 for ii in range(nAssets):
-    log_vol[:, ii], m[:, ii], m_var[:, ii] = estModel('GSV', log_ret[0:Test, ii], settings)
+    log_vol[:, ii], m[:, ii], m_var[:, ii] = estModel(
+        'GSV', log_ret[0:Test, ii], settings)
 
 ##############################################################################
 # Estimate the log-volatility using the model and all data
@@ -73,7 +78,7 @@ for ii in range(nAssets):
 # Estimate the Value-at-Risk
 ##############################################################################
 
-dof, corr, var = estVaR( log_vol, log_ret[:, 0:nAssets], Test, 0.01)
+dof, corr, var = estVaR(log_vol, log_ret[:, 0:nAssets], Test, 0.01)
 
 # Plot the VaR-estimate and the log-returns
 plt.plot(np.mean(var[10:], axis=1))
@@ -88,21 +93,23 @@ np.sum(np.mean(var[Test:], axis=1) >
 # Write results to file
 ##############################################################################
 
+ensure_dir(output_file + '-volatility.csv')
+
 # Log-volatility
 fileOut = pd.DataFrame(log_vol)
-fileOut.to_csv(output_file+'-volatility.csv')
+fileOut.to_csv(output_file + '-volatility.csv')
 
 # Model parameters
 fileOut = pd.DataFrame(m)
-fileOut.to_csv(output_file+'-model.csv')
+fileOut.to_csv(output_file + '-model.csv')
 
 # Variance of model parameters
 fileOut = pd.DataFrame(m_var)
-fileOut.to_csv(output_file+'-modelvar.csv')
+fileOut.to_csv(output_file + '-modelvar.csv')
 
 # VaR-estimate
 fileOut = pd.DataFrame(var)
-fileOut.to_csv(output_file+'-var.csv')
+fileOut.to_csv(output_file + '-var.csv')
 
 
 ##############################################################################

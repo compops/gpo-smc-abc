@@ -2,10 +2,9 @@
 ##############################################################################
 # Routines for
 # Particle smoothing
-# Version 2015-03-12
 #
-# Copyright (c) 2015 Johan Dahlin [ johan.dahlin (at) liu.se ]
-# Distributed under the MIT license.
+# Copyright (c) 2016 Johan Dahlin 
+# liu (at) johandahlin.com
 #
 ##############################################################################
 ##############################################################################

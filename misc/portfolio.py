@@ -1,3 +1,16 @@
+##############################################################################
+##############################################################################
+# Helpers for portfolio modelling
+#
+# For more details, see https://github.com/compops/gpo-abc2015
+#
+# (c) 2016 Johan Dahlin
+# liu (at) johandahlin.com
+#
+##############################################################################
+##############################################################################
+
+import os
 import urllib2
 
 import pandas as pd
@@ -15,33 +28,42 @@ from models.models_dists import multiTSimulate
 from scipy import stats
 from scipy import optimize
 
+##############################################################################
+# Ensure that directory exists 
+##############################################################################
+
+def ensure_dir(f):
+    d = os.path.dirname(f)
+    if not os.path.exists(d):
+        os.makedirs(d)
+
 
 ##############################################################################
 # Get the oil future data
 ##############################################################################
 
 def getOilData():
-    
+
     # Get the Excel file and parse the first sheet
     url = 'http://freakonometrics.free.fr/oil.xls'
     socket = urllib2.urlopen(url)
     xd = pd.ExcelFile(socket)
-    df=xd.parse(xd.sheet_names[0])
-    
+    df = xd.parse(xd.sheet_names[0])
+
     # Select the data for brent, Dubai and Maya oil
-    datasets = ['brent','Dubai','Maya']
-    
-    # Get the no. observations and the size of the estimation set (2/3)    
+    datasets = ['brent', 'Dubai', 'Maya']
+
+    # Get the no. observations and the size of the estimation set (2/3)
     T = df[datasets[0]].shape[0]
-    Test = int(np.floor(2*T/3))
+    Test = int(np.floor(2 * T / 3))
     nAssets = len(datasets)
-    
-    # Extract the log-returns for each asset    
-    log_returns = np.zeros((T,nAssets))
-    
+
+    # Extract the log-returns for each asset
+    log_returns = np.zeros((T, nAssets))
+
     for ii in range(len(datasets)):
-        log_returns[:,ii] = np.array(df[datasets[ii]])
-        
+        log_returns[:, ii] = np.array(df[datasets[ii]])
+
     return log_returns, T, Test, nAssets
 
 
@@ -50,23 +72,23 @@ def getOilData():
 ##############################################################################
 
 def getStockData(Test=805):
-        
+
     f = 'data/30_industry_portfolios_marketweighted.txt'
-    
+
     # Get the log-returns
     log_returns = np.loadtxt(f, skiprows=1)[:, 1:]
     T = log_returns.shape[0]
     nAssets = log_returns.shape[1]
-        
+
     return log_returns, T, Test, nAssets
-    
+
 
 ##############################################################################
 # Estimating the SV model using GPO-SMC-(ABC)
 ##############################################################################
 
 def estModel(version, data, settings):
-    
+
     # Arrange the data structures
     gpo = gpo_gpy.stGPO()
     sm = smc.smcSampler()
@@ -74,32 +96,32 @@ def estModel(version, data, settings):
     #=========================================================================
     # Setup the system model and load data
     #=========================================================================
-    if (version=='GSV'):
+    if (version == 'GSV'):
         sys = hwsv_4parameters.ssm()
     else:
         sys = hwsvalpha_4parameters.ssm()
-    
+
     sys.par = np.zeros((sys.nPar, 1))
     sys.xo = 0.0
     sys.T = len(data)
-    
+
     sys.version = "standard"
     sys.transformY = "none"
-    
+
     # Load data
-    if (version=='GSV'):
+    if (version == 'GSV'):
         sys.generateData()
     else:
         sys.par[3] = 2.0
         sys.generateData()
         sys.ynoiseless = np.array(data).reshape((sys.T, 1))
-    
+
     sys.y = np.array(data).reshape((sys.T, 1))
 
     #=========================================================================
     # Setup the model for inference
     #=========================================================================
-    if (version=='GSV'):
+    if (version == 'GSV'):
         th = hwsv_4parameters.ssm()
         th.transformY = "none"
         th.nParInference = 3
@@ -107,21 +129,21 @@ def estModel(version, data, settings):
         th = hwsvalpha_4parameters.ssm()
         th.transformY = "arctan"
         th.nParInference = 4
-    
-    th.version = "standard"    
+
+    th.version = "standard"
     th.copyData(sys)
 
     #=========================================================================
     # Setup the SMC algorithm
     #=========================================================================
 
-    if (version=='GSV'):
+    if (version == 'GSV'):
         sm.filter = sm.bPF
     else:
         sm.filter = sm.bPFabc
         sm.weightdist = settings['smc_weightdist']
         sm.tolLevel = settings['smc_tolLevel']
-        
+
         # Add noise to data for noisy ABC
         th.makeNoisy(sm)
 
@@ -146,7 +168,7 @@ def estModel(version, data, settings):
     gpo.EstimateHyperparametersInterval = settings['gpo_estHypParInterval']
     gpo.EstimateThHatEveryIteration = False
     gpo.EstimateHessianEveryIteration = False
-    
+
     # Estimate parameters
     gpo.bayes(sm, sys, th)
     gpo.estimateHessian()
@@ -163,46 +185,45 @@ def estModel(version, data, settings):
 ##############################################################################
 
 def estVol(version, data, theta, settings):
-    
+
     # Arrange the data structures
     sm = smc.smcSampler()
 
     #=========================================================================
     # Setup the system model and load data
     #=========================================================================
-    if (version=='GSV'):
+    if (version == 'GSV'):
         sys = hwsv_4parameters.ssm()
     else:
         sys = hwsvalpha_4parameters.ssm()
-    
+
     sys.par = np.zeros((sys.nPar, 1))
     sys.xo = 0.0
     sys.T = len(data)
     sys.version = "standard"
     sys.transformY = "none"
-    
+
     # Load data
-    if (version=='GSV'):
-        sys = hwsv_4parameters.ssm()
+    if (version == 'GSV'):
         sys.generateData()
     else:
         sys.par[3] = 2.0
         sys.generateData()
         sys.ynoiseless = np.array(data).reshape((sys.T, 1))
-    
+
     sys.y = np.array(data).reshape((sys.T, 1))
 
     #=========================================================================
     # Setup the model for inference
     #=========================================================================
-    if (version=='GSV'):
+    if (version == 'GSV'):
         th = hwsv_4parameters.ssm()
         th.transformY = "none"
     else:
         th = hwsvalpha_4parameters.ssm()
         th.transformY = "arctan"
-    
-    th.version = "standard"    
+
+    th.version = "standard"
     th.nParInference = sys.nPar
     th.copyData(sys)
 
@@ -210,22 +231,22 @@ def estVol(version, data, theta, settings):
     # Setup the SMC algorithm
     #=========================================================================
 
-    if (version=='GSV'):
+    if (version == 'GSV'):
         sm.filter = sm.bPF
     else:
         sm.filter = sm.bPFabc
         sm.weightdist = settings['smc_weightdist']
         sm.tolLevel = settings['smc_tolLevel']
-        
+
         # Add noise to data for noisy ABC
         th.makeNoisy(sm)
 
     sm.nPart = settings['smc_nPart']
     sm.genInitialState = True
-    
+
     # Estimate the log-volatility
     sm.filter(th)
-    
+
     # Return the log-volatility estimate
     return sm.xhatf[:, 0]
 
@@ -237,7 +258,7 @@ def estVol(version, data, theta, settings):
 ##############################################################################
 
 def estVaR(x, d, Test, alpha):
-    
+
     # Get the no. assets and no. time steps from the data
     Test = int(Test)
     nAssets = int(x.shape[1])
@@ -250,7 +271,6 @@ def estVaR(x, d, Test, alpha):
     th.nParInference = th.nPar
     th.xo = 0.0
 
-    
     #=========================================================================
     # Fit the copula model
     # Use only the estimation data (Test first observations)
@@ -288,13 +308,12 @@ def estVaR(x, d, Test, alpha):
     b = [(0.1, 50.0)]
     res = optimize.fmin_l_bfgs_b(
         th.evaluateLogPosteriorBFGS, 2.0, approx_grad=1, bounds=b)
-    
+
     # Store parameters and construct correlation matrix
     th.nParInference = 1
     th.storeParameters(res[0], th)
     th.constructCorrelationMatrix(nAssets)
-    
-    
+
     #=========================================================================
     # Simulate from the copula model
     # Use all the data (estimation and validation)
