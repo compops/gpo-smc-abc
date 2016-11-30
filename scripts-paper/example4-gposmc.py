@@ -26,6 +26,9 @@ import matplotlib.pylab as plt
 from misc.portfolio import getStockData, estModel, estVol, estVaR
 from misc.portfolio import ensure_dir
 
+# Set the seed for re-producibility
+np.random.seed(87655678)
+
 
 ##############################################################################
 # Get log-returns
@@ -46,8 +49,8 @@ settings = {'gpo_initPar':     np.array([ 0.00, 0.95, 0.50]),
             'gpo_upperBounds': np.array([ 5.00, 0.99, 1.00]),
             'gpo_lowerBounds': np.array([ 0.00, 0.00, 0.10]),
             'gpo_estHypParInterval': 25,
-            'gpo_preIter': 50,
-            'gpo_maxIter': 150,
+            'gpo_preIter': 5,
+            'gpo_maxIter': 5,
             'smc_nPart': 1000
             }
 

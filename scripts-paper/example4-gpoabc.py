@@ -23,10 +23,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
 
-
 from misc.portfolio import getStockData, estModel, estVaR, estVol
 from misc.portfolio import ensure_dir
 
+# Set the seed for re-producibility
+np.random.seed(87655678)
 
 ##############################################################################
 # Get log-returns
