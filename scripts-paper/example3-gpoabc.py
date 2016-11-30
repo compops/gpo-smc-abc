@@ -23,8 +23,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
 
-from misc.portfolio_helpers import getOilData, estModel, estVol, estVaR
-from misc.portfolio_helpers import ensure_dir
+from misc.portfolio import getOilData, estModel, estVaR, estVol
+from misc.portfolio import ensure_dir
 
 
 ##############################################################################
@@ -42,9 +42,9 @@ log_ret, T, Test, nAssets = getOilData()
 # Settings
 ##############################################################################
 
-settings = {'gpo_initPar':     np.array([ 0.00, 0.95, 0.50, 1.50]),
+settings = {'gpo_initPar':     np.array([ 0.00, 0.95, 0.50, 1.80]),
             'gpo_upperBounds': np.array([ 5.00, 0.99, 1.00, 2.00]),
-            'gpo_lowerBounds': np.array([-5.00, 0.00, 0.10, 1.00]),
+            'gpo_lowerBounds': np.array([ 0.00, 0.00, 0.10, 1.20]),
             'gpo_estHypParInterval': 25,
             'gpo_preIter': 50,
             'gpo_maxIter': 150,
@@ -72,7 +72,7 @@ for ii in range(nAssets):
 log_vol = np.zeros((T, nAssets))
 
 for ii in range(nAssets):
-    log_vol[:, ii] = estVol('GSV', log_ret[0:T, ii], m[:, ii], settings)
+    log_vol[:, ii] = estVol('aSV', log_ret[0:T, ii], m[:, ii], settings)
 
 
 ##############################################################################

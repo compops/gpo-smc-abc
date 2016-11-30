@@ -23,8 +23,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
 
-from misc.portfolio_helpers import getStockData, estModel, estSVG, estVaR
-from misc.portfolio_helpers import ensure_dir
+from misc.portfolio import getStockData, estModel, estVaR, estVol
+from misc.portfolio import ensure_dir
 
 
 ##############################################################################
@@ -42,9 +42,9 @@ log_ret, T, Test, nAssets = getStockData()
 # Settings
 ##############################################################################
 
-settings = {'gpo_initPar':     np.array([0.00, 0.95, 0.50]),
-            'gpo_upperBounds': np.array([5.00, 0.99, 1.00]),
-            'gpo_lowerBounds': np.array([-5.00, 0.00, 0.10]),
+settings = {'gpo_initPar':     np.array([ 0.00, 0.95, 0.50]),
+            'gpo_upperBounds': np.array([ 5.00, 0.99, 1.00]),
+            'gpo_lowerBounds': np.array([ 0.00, 0.00, 0.10]),
             'gpo_estHypParInterval': 25,
             'gpo_preIter': 50,
             'gpo_maxIter': 150,
@@ -61,8 +61,7 @@ m = np.zeros((3, nAssets))
 m_var = np.zeros((3, nAssets))
 
 for ii in range(nAssets):
-    log_vol[:, ii], m[:, ii], m_var[:, ii] = estModel(
-        'GSV', log_ret[0:Test, ii], settings)
+    log_vol[:, ii], m[:, ii], m_var[:, ii] = estModel('GSV', log_ret[0:Test, ii], settings)
 
 ##############################################################################
 # Estimate the log-volatility using the model and all data
@@ -71,7 +70,7 @@ for ii in range(nAssets):
 log_vol = np.zeros((T, nAssets))
 
 for ii in range(nAssets):
-    log_vol[:, ii] = estSVG(log_ret[0:T, ii], m[:, ii])
+    log_vol[:, ii] = estVol('GSV', log_ret[0:T, ii], m[:, ii], settings)
 
 
 ##############################################################################
