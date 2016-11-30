@@ -2,7 +2,7 @@ import numpy as np
 import scipy.interpolate as interpolate
 
 def pobs( data ):
-    return np.argsort( data ) / ( len( data ) - 1 )
+    return (1.0 + np.argsort( data ).astype(float) ) / float( len( data ) + 2.0)
 
 
 def inv_pobs( data, grid, nBins ):
