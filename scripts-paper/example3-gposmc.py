@@ -24,7 +24,8 @@ import numpy as np
 import matplotlib.pylab as plt
 
 from misc.portfolio import getOilData, estModel, estVaR, estVol
-from misc.portfolio_helpers import ensure_dir
+
+from misc.portfolio import ensure_dir
 
 
 ##############################################################################
@@ -44,7 +45,7 @@ log_ret, T, Test, nAssets = getOilData()
 
 settings = {'gpo_initPar':     np.array([ 0.00, 0.95, 0.50]),
             'gpo_upperBounds': np.array([ 5.00, 0.99, 1.00]),
-            'gpo_lowerBounds': np.array([-5.00, 0.00, 0.10]),
+            'gpo_lowerBounds': np.array([ 0.00, 0.00, 0.10]),
             'gpo_estHypParInterval': 25,
             'gpo_preIter': 50,
             'gpo_maxIter': 150,

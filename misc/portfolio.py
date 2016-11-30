@@ -218,13 +218,14 @@ def estVol(version, data, theta, settings):
     #=========================================================================
     if (version == 'GSV'):
         th = hwsv_4parameters.ssm()
+        th.nParInference = 3
         th.transformY = "none"
     else:
         th = hwsvalpha_4parameters.ssm()
+        th.nParInference = 4
         th.transformY = "arctan"
 
     th.version = "standard"
-    th.nParInference = sys.nPar
     th.copyData(sys)
 
     #=========================================================================
@@ -245,6 +246,7 @@ def estVol(version, data, theta, settings):
     sm.genInitialState = True
 
     # Estimate the log-volatility
+    th.storeParameters(theta, sys)
     sm.filter(th)
 
     # Return the log-volatility estimate
