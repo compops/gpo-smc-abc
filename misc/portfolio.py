@@ -13,6 +13,10 @@
 import os
 import urllib2
 
+from StringIO import StringIO
+from zipfile import ZipFile
+from urllib import urlopen
+
 import pandas as pd
 import numpy as np
 import scipy as sp
@@ -73,10 +77,13 @@ def getOilData():
 
 def getStockData(Test=805):
 
-    f = 'data/30_industry_portfolios_marketweighted.txt'
+    url = urlopen("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/30_Industry_Portfolios_CSV.zip")
+    zipfile = ZipFile(StringIO(url.read()))
 
-    # Get the log-returns
-    log_returns = np.loadtxt(f, skiprows=1)[:, 1:]
+    data = zipfile.open('30_Industry_Portfolios.CSV')
+    data = pd.read_csv(data, header=6, index_col=0, nrows=1074)
+
+    log_returns=np.asarray(data)
     T = log_returns.shape[0]
     nAssets = log_returns.shape[1]
 
