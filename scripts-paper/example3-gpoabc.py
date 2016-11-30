@@ -23,7 +23,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pylab as plt
 
-from misc.portfolio import getOilData, estModel, estVaR, estVol
+from misc.portfolio import getOilData, estModel, estVol, estVaR
 from misc.portfolio import ensure_dir
 
 
