@@ -35,22 +35,22 @@ np.random.seed(87655678)
 ##############################################################################
 
 # Setup files
-output_file = 'results/example4-gposmc.csv'
+output_file = 'results/example4-gposmc'
 
 # Get the data
-log_ret, T, Test, nAssets = getStockData()
+log_ret, T, Test, nAssets, dates = getStockData()
 
 
 ##############################################################################
 # Settings
 ##############################################################################
 
-settings = {'gpo_initPar':     np.array([ 0.00, 0.95, 0.50]),
-            'gpo_upperBounds': np.array([ 5.00, 0.99, 1.00]),
-            'gpo_lowerBounds': np.array([ 0.00, 0.00, 0.10]),
+settings = {'gpo_initPar':     np.array([0.00, 0.95, 0.50]),
+            'gpo_upperBounds': np.array([5.00, 0.99, 1.00]),
+            'gpo_lowerBounds': np.array([0.00, 0.00, 0.10]),
             'gpo_estHypParInterval': 25,
-            'gpo_preIter': 5,
-            'gpo_maxIter': 5,
+            'gpo_preIter': 50,
+            'gpo_maxIter': 150,
             'smc_nPart': 1000
             }
 
@@ -64,7 +64,8 @@ m = np.zeros((3, nAssets))
 m_var = np.zeros((3, nAssets))
 
 for ii in range(nAssets):
-    log_vol[:, ii], m[:, ii], m_var[:, ii] = estModel('GSV', log_ret[0:Test, ii], settings)
+    log_vol[:, ii], m[:, ii], m_var[:, ii] = estModel(
+        'GSV', log_ret[0:Test, ii], settings)
 
 ##############################################################################
 # Estimate the log-volatility using the model and all data
@@ -113,6 +114,17 @@ fileOut.to_csv(output_file + '-modelvar.csv')
 fileOut = pd.DataFrame(var)
 fileOut.to_csv(output_file + '-var.csv')
 
+# DoF-estimate
+fileOut = pd.DataFrame(dof)
+fileOut.to_csv(output_file + '-dof.csv')
+
+# Spearman correlation-estimate
+fileOut = pd.DataFrame(corr)
+fileOut.to_csv(output_file + '-corr.csv')
+
+# Log-returns
+fileOut = pd.DataFrame(log_ret, index=dates)
+fileOut.to_csv(output_file + '-returns.csv')
 
 ##############################################################################
 # End of file

@@ -67,8 +67,10 @@ def getOilData():
 
     for ii in range(len(datasets)):
         log_returns[:, ii] = np.array(df[datasets[ii]])
+    
+    dates = df['Date']
 
-    return log_returns, T, Test, nAssets
+    return log_returns, T, Test, nAssets, dates
 
 
 ##############################################################################
@@ -87,7 +89,8 @@ def getStockData(Test=805):
     T = log_returns.shape[0]
     nAssets = log_returns.shape[1]
 
-    return log_returns, T, Test, nAssets
+    dates = data.index
+    return log_returns, T, Test, nAssets, dates
 
 
 ##############################################################################
