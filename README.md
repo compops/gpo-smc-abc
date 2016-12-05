@@ -1,13 +1,13 @@
 # gpo-abc2015
 This code was downloaded from < https://github.com/compops/gpo-abc2015 > and contains the code used to produce the results in
 
-J. Dahlin, M. Villani and  T. B. Schön, **Approximate Bayesian inference using Gaussian process optimisation applied to intractable likelihood models**. Pre-print, arXiv:1506.06975v1, 2015.
+J. Dahlin, M. Villani and  T. B. Schön, **Bayesian optimisation for fast approximate inference in state-space models with intractable likelihoods**. Pre-print, arXiv:1506.06975v2, 2015.
 
 The paper is available as a preprint from < http://arxiv.org/pdf/1506.06975 > and < http://liu.johandahlin.com/ >.
 
 ## Dependencies
 
-The code is written and tested for Python 2.7.6. The implementation makes use of NumPy 1.9.2, SciPy 0.15.1, Matplotlib 1.4.3, Pandas 0.13.1, GPy 0.6.0, pyDOE 0.3.7, sobol 0.9, numdifftools 0.7.7 and DIRECT 1.0.1. Please have these packages installed, on Ubuntu they can be installed using "sudo pip install --upgrade package-name ". For more information about, the GPy package see < https://sheffieldml.github.io/GPy/ > and the DIRECT package see < http://pythonhosted.org/DIRECT/ >
+The code is written and tested for Python 2.7.12. The implementation makes use of NumPy 1.11.1rc1, SciPy 0.17.1, Matplotlib 1.5.2rc1, Pandas 0.17.1, GPy 1.5.6, pyDOE 0.3.8, sobol 0.9, numdifftools 0.9.17 and DIRECT 1.0.1. Please have these packages installed, on Ubuntu they can be installed using "sudo pip install --upgrade package-name ". For more information about, the GPy package see < https://sheffieldml.github.io/GPy/ > and the DIRECT package see < http://pythonhosted.org/DIRECT/ >
 
 ## Minimal working examples (scripts-mwe)
 
@@ -132,21 +132,31 @@ gpo.estimateHessian()
 ```
 We note that the 95% confidence intervals for the parameter estimates are *mu*: [-0.227, 0.524], *phi*: [0.918, 0.981], *sigma_v*: [0.459, 0.785] and *alpha*: [1.377, 1.704]. This corresponds to a log-volatility with a large autocorrelation and fairly large innovations and heavy-tailed log-returns. The script also estimates the log-volatility and the estimate seems reasonable when comparing with the log-observations.
 
-## Replication scripts for paper (scripts-draft1)
+## Replication scripts for paper (scripts-paper)
 
 ### Example 1: Stochastic volatility model with Gaussian log-returns (Sec 6.1)
-**example1-synthetic-svmodel-gposmc.py** Makes use of GPO with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the solid lines (left) and the solid area (right). 
+**example1-gposmc.py** Makes use of GPO with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the solid lines (left) and the solid area (right). 
 
-**example1-synthetic-svmodel-gpoabc.py** Makes use of GPO with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the grey lines (right) when varying the standard deviation of the kernel. 
+**example1-gpoabc.py** Makes use of GPO with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the grey lines (right) when varying the standard deviation of the kernel. 
 
-**example1-synthetic-svmodel-qpmh2smc.py** Makes use of quasi-Newton particle Metropolis-Hastings (qPMH2) with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the histograms (left). The qPMH2 algorithm provides the *ground truth* to which we compare the GPO algorithm.
+**example1-qpmh2smc.py** Makes use of quasi-Newton particle Metropolis-Hastings (qPMH2) with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the histograms (left). The qPMH2 algorithm provides the *ground truth* to which we compare the GPO algorithm.
 
-**example1-synthetic-svmodel-spsa.py** Makes use of the simultaneous perturbation and stochastic approximation (SPSA) algorithm proposed by Spall (1987) < http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4789489&tag=1 > with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 2.
+**example1-spsa.py** Makes use of the simultaneous perturbation and stochastic approximation (SPSA) algorithm proposed by Spall (1987) < http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4789489&tag=1 > with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 2.
 
 ### Example 2: Stochastic volatility model with alpha-stable log-returns (Sec. 6.2)
-**example2-coffee-asvmodel-gpoabc.py** Makes use of GPO with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the solif lines (middle and lower).
+**example2-gpoabc.py** Makes use of GPO with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the solif lines (middle and lower).
 
-**example2-coffee-asvmodel-qpmh2abc.py** Makes use of qPMH2 with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the histograms (middle and lower).
+**example2-qpmh2abc.py** Makes use of qPMH2 with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the histograms (middle and lower).
 
-### Example 3: Modelling price dependencies between oil futures (Sec. 6.3)
-Code and data are not online due to copyright issues. Please, contact me to obtain the source code and data.
+### Example 3: Computing Value-at-Risk for a portfolio of oil futures (Sec. 6.3)
+**example3-gpoabc.py** Estimates a Student's t-copula with SV models with alpha-stable log-returns as the model for each margin. GPO-SMC-ABC is used to estimate the parameters of each marginal model (one for each type of asset). The parameters of the copula model is estimated using a quasi-Newton method and a moment method, see paper for details.
+
+**example3-gposmc.py** Estimates a Student's t-copula with SV models with Gaussian log-returns as the model for each margin. GPO-SMC is used to estimate the parameters of each marginal model (one for each type of asset). The parameters of the copula model is estimated using a quasi-Newton method and a moment method, see paper for details.
+
+### Example 3: Computing Value-at-Risk for a portfolio of stocks (Sec. 6.4)
+**example4-gpoabc.py** Estimates a Student's t-copula with SV models with alpha-stable log-returns as the model for each margin. GPO-SMC-ABC is used to estimate the parameters of each marginal model (one for each type of asset). The parameters of the copula model is estimated using a quasi-Newton method and a moment method, see paper for details.
+
+**example4-gposmc.py** Estimates a Student's t-copula with SV models with Gaussian log-returns as the model for each margin. GPO-SMC is used to estimate the parameters of each marginal model (one for each type of asset). The parameters of the copula model is estimated using a quasi-Newton method and a moment method, see paper for details.
+
+## Replication scripts for figures in paper (scripts-paper-plots)
+These R scripts (one for each of the four examples) reproduces the plots in Figures 2-7 in the paper. The scripts make use of the output from the runs of each example, which also are provided in the results-folder in this repo. Some dependencies are required to generate the plots, running "install.packages(c("Quandl","RColorBrewer","stabledist","copula","zoo"))" should install all required libraries. 
