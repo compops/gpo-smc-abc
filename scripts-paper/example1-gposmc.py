@@ -105,7 +105,7 @@ gpo.bayes(sm, sys, th)
 
 # Write output
 gpo.writeToFile(
-    sm, fileOutName='results/synthetic-svmodel/gposmc_map_bPF_N1000_3par.csv')
+    sm, fileOutName='results/example1/gposmc_map_bPF_N1000_3par.csv')
 
 # Estimate inverse Hessian and print it to screen
 gpo.estimateHessian()

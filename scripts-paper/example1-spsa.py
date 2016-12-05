@@ -96,7 +96,7 @@ import pandas
 out = np.hstack((ml.th, ml.ll))
 out = out.transpose()
 
-output_file = "results/synthetic-svmodel/spsa_map_bPF_N1000_3par.csv"
+output_file = "results/example1/spsa_map_bPF_N1000_3par.csv"
 ensure_dir(output_file)
 pandas.DataFrame(out).to_csv(output_file)
 

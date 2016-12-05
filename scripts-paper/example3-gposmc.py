@@ -34,7 +34,7 @@ np.random.seed(87655678)
 ##############################################################################
 
 # Setup files
-output_file = 'results/example3-gposmc'
+output_file = 'results/example3/example3-gposmc'
 
 # Get the data
 log_ret, T, Test, nAssets, dates = getOilData()

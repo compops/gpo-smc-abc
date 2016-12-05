@@ -34,7 +34,7 @@ np.random.seed(87655678)
 ##############################################################################
 
 # Setup files
-output_file = 'results/example3-gpoabc'
+output_file = 'results/example3/example3-gpoabc'
 
 # Get the data
 log_ret, T, Test, nAssets, dates = getOilData()

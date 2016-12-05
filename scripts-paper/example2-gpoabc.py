@@ -126,7 +126,7 @@ for ii in range(nRuns):
 
     # Write output
     gpo.writeToFile(
-        sm, fileOutName='results/coffee-asvmodel/gpoabc_map_bPF_N2000_3par_run' + str(ii) + '.csv')
+        sm, fileOutName='results/example2/gpoabc_map_bPF_N2000_3par_run' + str(ii) + '.csv')
 
     # Estimate inverse Hessian and print it to screen
     gpo.estimateHessian()

@@ -100,7 +100,7 @@ np.random.seed(87655678)
 pmh.runSampler(sm, sys, th, "qPMH2")
 
 # Write the results to file
-pmh.writeToFile()
+pmh.writeToFile(fileOutName='results/example1/qPMH2_bPF_N2000_3par.csv')
 
 # np.mean( pmh.tho[pmh.nBurnIn:pmh.nIter,:], axis=0 )
 # array([ 0.21207816,  0.87635889,  0.25195264])

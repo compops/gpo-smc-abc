@@ -34,7 +34,7 @@ np.random.seed(87655678)
 ##############################################################################
 
 # Setup files
-output_file = 'results/example4-gpoabc'
+output_file = 'results/example4/example4-gpoabc'
 
 # Get the data
 log_ret, T, Test, nAssets, dates = getStockData()
