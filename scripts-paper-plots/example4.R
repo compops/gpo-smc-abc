@@ -52,7 +52,7 @@ layout(matrix(1, 1, 1, byrow = TRUE))
 par(mar = c(4, 4, 0, 0))
 
 plot(grid, rowMeans(y[, -1]), pch = 19, col = "darkgrey", bty = "n", ylab = "log-returns", 
-    xlab = "time", cex = 0.5, ylim = c(-50, 30), xaxt = "n", cex.lab = 0.75, 
+    xlab = "time", cex = 0.5, ylim = c(-30, 50), xaxt = "n", cex.lab = 0.75, 
     cex.axis = 0.75)
 
 atVector1 <- seq(grid[1], grid[T], by = "5 years")
@@ -61,10 +61,10 @@ axis.Date(1, grid, atVector1, labels = NA, cex.lab = 0.75, cex.axis = 0.75)
 atVector2 <- seq(grid[1], grid[T], by = "10 years")
 axis.Date(1, grid, atVector2, format = "%Y", cex.lab = 0.75, cex.axis = 0.75)
 
-lines(grid[seq(10, T)], rowMeans(VaRABC[, -1])[10:T], col = plotColors[4], 
+lines(grid[seq(10, T)], -rowMeans(VaRABC[, -1])[10:T], col = plotColors[4], 
     lwd = 1.5)
 
-lines(grid[seq(10, T)], rowMeans(VaRSMC[, -1])[10:T], col = plotColors[5], 
+lines(grid[seq(10, T)], -rowMeans(VaRSMC[, -1])[10:T], col = plotColors[5], 
     lwd = 1.5)
 
 abline(v = grid[round(2 * T/3)], lty = "dashed")
