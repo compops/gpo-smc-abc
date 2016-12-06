@@ -3,7 +3,7 @@
 # Estimating the volatility of synthetic data
 # using a stochastic volatility (SV) model with Gaussian log-returns.
 #
-# The SV model is inferred using the qPMH2 algorithm.
+# The SV model is inferred using the PMH algorithm.
 #
 # For more details, see https://github.com/compops/gpo-abc2015
 #
@@ -13,13 +13,24 @@
 ##############################################################################
 ##############################################################################
 
+import sys
+sys.path.insert(0, '/media/sf_home/src/gpo-abc2015')
 
+# Setup files
+output_file = 'results/example1/example1-pmh'
+
+# Load packages and helpers
 import numpy as np
+import pandas as pd
 import matplotlib.pylab as plt
 
 from state import smc
 from para import pmh
 from models import hwsv_4parameters
+from misc.portfolio import ensure_dir
+
+# Set the seed for re-producibility
+np.random.seed(87655678)
 
 
 ##############################################################################
@@ -34,13 +45,15 @@ pmh = pmh.stPMH()
 ##############################################################################
 sys = hwsv_4parameters.ssm()
 sys.par = np.zeros((sys.nPar, 1))
+
 sys.par[0] = 0.20
 sys.par[1] = 0.96
 sys.par[2] = 0.15
 sys.par[3] = 0.00
+
 sys.T = 500
 sys.xo = 0.0
-sys.version = "tanhexp"
+sys.version = "standard"
 
 
 ##############################################################################
@@ -51,59 +64,72 @@ sys.generateData(
 
 
 ##############################################################################
-##############################################################################
 # Setup the parameters
+##############################################################################
 th = hwsv_4parameters.ssm()
 th.nParInference = 3
-th.version = "tanhexp"
+th.version = "standard"
 th.copyData(sys)
 
 
 ##############################################################################
 # Setup the SMC algorithm
 ##############################################################################
-
 sm.filter = sm.bPF
-sm.smoother = sm.flPS
-sm.fixedLag = 12
 sm.genInitialState = True
 
 sm.nPart = 2000
-sm.resampFactor = 2.5
 sm.xo = sys.xo
 th.xo = sys.xo
+
 
 ##############################################################################
 # Setup the PMH algorithm
 ##############################################################################
-
 pmh.dataset = 0
-
-pmh.nIter = 30000
+pmh.nIter = 15000
 pmh.nBurnIn = 5000
+
+# Set initial parameters
 pmh.initPar = (0.10, 0.95, 0.12)
 
-pmh.stepSize = 1.0
-pmh.epsilon = 400
-pmh.memoryLength = 20
-pmh.makeHessianPSDmethod = "hybrid"
-pmh.PSDmethodhybridSamps = 2500
+# Set the pre-conditioning matrix from initial run
+pmh.invHessian = np.matrix([[0.0137448825, -0.0011175262,  0.0006854814],
+                            [-0.0011175262,  0.0007471863, -0.0011258477],
+                            [0.0006854814, 0.0011258477, 0.0037545209]])
+
+# Use only the diagonal, off-diagonal elements can be poorly estimated by GPO
+pmh.invHessian = np.diag(np.diag(pmh.invHessian)[0:th.nParInference])
+
 
 ##############################################################################
-# Run the qPMH2 sampler
+# Run the PMH sampler
 ##############################################################################
 
-# Set seed for re-prodcibility
-np.random.seed(87655678)
+# Settings for the PMH routine
+pmh.stepSize = 2.562 / np.sqrt(th.nParInference)
 
-# Run the quasi-Newton PMH2 sampler
-pmh.runSampler(sm, sys, th, "qPMH2")
+# Run the pre-conditioned PMH0 sampler
+pmh.runSampler(sm, sys, th, "pPMH0")
 
 # Write the results to file
-pmh.writeToFile(fileOutName='results/example1/qPMH2_bPF_N2000_3par.csv')
+pmh.writeToFile(fileOutName='results/example1/pmh_bPF_N2000_3par.csv')
 
-# np.mean( pmh.tho[pmh.nBurnIn:pmh.nIter,:], axis=0 )
-# array([ 0.21207816,  0.87635889,  0.25195264])
+
+#############################################################################
+# Write results to file
+##############################################################################
+
+ensure_dir(output_file + '-thhat.csv')
+
+# Model parameters
+fileOut = pd.DataFrame(np.mean(pmh.th[pmh.nBurnIn:pmh.nIter, :], axis=0))
+fileOut.to_csv(output_file + '-model.csv')
+
+# Inverse Hessian estimate
+fileOut = pd.DataFrame(np.cov(pmh.th[pmh.nBurnIn:pmh.nIter, :]))
+fileOut.to_csv(output_file + '-modelvar.csv')
+
 
 ##############################################################################
 # End of file

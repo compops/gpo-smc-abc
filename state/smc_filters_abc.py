@@ -27,6 +27,7 @@ def proto_pf_abc(classSMC, sys):
 
     # Initalise variables
     a = np.zeros((classSMC.nPart, sys.T))
+    ar = np.zeros((classSMC.nPart, sys.T))
     p = np.zeros((classSMC.nPart, sys.T))
     v = np.zeros((classSMC.nPart, sys.T))
     v1 = np.zeros((classSMC.nPart, sys.T))
@@ -68,17 +69,24 @@ def proto_pf_abc(classSMC, sys):
                     if classSMC.resamplingType == "stratified":
                         nIdx = resampleStratified(w[:, tt - 1])
                         nIdx = np.transpose(nIdx.astype(int))
+                        ar[:, 0:(tt - 1)] = ar[nIdx, 0:(tt - 1)]
+                        ar[:, tt] = nIdx
 
                     elif classSMC.resamplingType == "systematic":
                         nIdx = resampleSystematic(w[:, tt - 1])
                         nIdx = np.transpose(nIdx.astype(int))
+                        ar[:, 0:(tt - 1)] = ar[nIdx, 0:(tt - 1)]
+                        ar[:, tt] = nIdx
 
                     elif classSMC.resamplingType == "multinomial":
                         nIdx = resampleMultinomial(w[:, tt - 1])
+                        ar[:, 0:(tt - 1)] = ar[nIdx, 0:(tt - 1)]
+                        ar[:, tt] = nIdx
 
                 else:
                     # No resampling
                     nIdx = np.arange(0, classSMC.nPart)
+                    ar[:, tt] = nIdx
 
             a[:, tt] = nIdx
 
@@ -136,6 +144,11 @@ def proto_pf_abc(classSMC, sys):
         #======================================================================
         w[:, tt] /= np.sum(w[:, tt])
         xh[tt] = np.sum(w[:, tt] * p[:, tt])
+    
+    # Sample a trajectory
+    idx = np.random.choice(classSMC.nPart, 1, p=w[:, sys.T - 1])
+    idx = ar[idx, sys.T - 1].astype(int)
+    classSMC.xtraj = p[idx, :]
 
     #=====================================================================
     # Create output
@@ -148,6 +161,7 @@ def proto_pf_abc(classSMC, sys):
     classSMC.v1 = v1
     classSMC.v2 = v2
     classSMC.a = a
+    classSMC.ar = ar
     classSMC.p = p
 
 ##############################################################################

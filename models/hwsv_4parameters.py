@@ -253,7 +253,7 @@ class ssm(object):
 
         # Normal prior for mu
         if (self.nParInference >= 1):
-            out += normalLogPDF(self.par[0], 0, 2.0)
+            out += normalLogPDF(self.par[0], 0, 0.2)
 
         # Truncated normal prior for phi
         if (self.nParInference >= 2):

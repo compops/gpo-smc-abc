@@ -278,7 +278,6 @@ class ssm(object):
 
         # Beta prior for alpha/2
         if (self.nParInference >= 4):
-            #out += betaLogPDF( self.par[3]/2.0, a=6.0, b=2.0 )
             out += betaLogPDF(self.par[3] / 2.0, a=20.0, b=2.0)
 
         return out
@@ -299,7 +298,6 @@ class ssm(object):
             return gammaLogPDFgradient(self.par[2], a=2.0, b=1.0 / 20.0)
         elif (v1 == 3):
             # Beta prior for alpha/2
-            # return betaLogPDFgradient( self.par[3]/2.0, a=6.0, b=2.0 )
             return betaLogPDFgradient(self.par[3] / 2.0, a=20.0, b=2.0)
         else:
             return 0.0
@@ -320,7 +318,6 @@ class ssm(object):
             return gammaLogPDFhessian(self.par[2], a=2.0, b=1.0 / 20.0)
         elif ((v1 == 3) & (v1 == 3)):
             # Beta prior for alpha/2
-            # return betaLogPDFhessian( self.par[3]/2.0, a=6.0, b=2.0 )
             return betaLogPDFhessian(self.par[3] / 2.0, a=20.0, b=2.0)
         else:
             return 0.0
@@ -350,7 +347,6 @@ class ssm(object):
 
         # Beta prior for alpha
         if (self.nParInference >= 4):
-            #out[3] = 2.0 * np.random.beta( a=6.0, b=2.0 );
             out[3] = 2.0 * np.random.beta(a=20.0, b=2.0)
 
         return out

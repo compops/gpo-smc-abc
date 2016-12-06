@@ -62,7 +62,7 @@ hist(dpmh3$th0, breaks = floor(sqrt(dim(dpmh3)[1])), main = "", freq = F,
 
 # Prior for mu
 grid = seq(-0.2, 0.6, 0.01)
-dist = dnorm(grid, 0, 0.2)
+dist = dnorm(grid, 0, 2.0)
 lines(grid, dist, lwd = 1, col = "grey30")
 
 # GPO

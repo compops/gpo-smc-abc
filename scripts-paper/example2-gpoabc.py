@@ -14,8 +14,16 @@
 ##############################################################################
 
 
-import Quandl
+import sys
+sys.path.insert(0, '/media/sf_home/src/gpo-abc2015')
+
+# Setup files
+output_file = 'results/example2/example2-gpoabc'
+
+# Load packages and helpers
+import quandl
 import numpy as np
+import pandas as pd
 import matplotlib.pylab as plt
 
 from state import smc
@@ -23,6 +31,10 @@ from para import gpo_gpy
 from models import hwsvalpha_4parameters
 
 from misc.portfolio import ensure_dir
+
+# Set the seed for re-producibility
+np.random.seed(87655678)
+
 
 ##############################################################################
 # Arrange the data structures
@@ -35,10 +47,12 @@ gpo = gpo_gpy.stGPO()
 ##############################################################################
 sys = hwsvalpha_4parameters.ssm()
 sys.par = np.zeros((sys.nPar, 1))
+
 sys.par[0] = 0.20
 sys.par[1] = 0.98
 sys.par[2] = 0.15
 sys.par[3] = 1.80
+
 sys.T = 399
 sys.xo = 0.0
 sys.version = "standard"
@@ -49,9 +63,10 @@ sys.transformY = "arctan"
 ##############################################################################
 sys.generateData()
 
-d = Quandl.get("CHRIS/ICE_KC2", trim_start="2013-06-01", trim_end="2015-01-01")
+d = quandl.get("CHRIS/ICE_KC2", trim_start="2013-06-01", trim_end="2015-01-01")
 logReturns = 100 * np.diff(np.log(d['Settle']))
 logReturns = logReturns[~np.isnan(logReturns)]
+
 sys.y = np.matrix(logReturns).reshape((sys.T, 1))
 sys.ynoiseless = np.matrix(logReturns).reshape((sys.T, 1))
 
@@ -68,19 +83,28 @@ th.copyData(sys)
 # Setup the GPO algorithm
 ##############################################################################
 
+settings = {'gpo_initPar':     np.array([0.00, 0.95, 0.50, 1.80]),
+            'gpo_upperBounds': np.array([5.00, 0.99, 1.00, 2.00]),
+            'gpo_lowerBounds': np.array([0.00, 0.00, 0.10, 1.20]),
+            'gpo_estHypParInterval': 25,
+            'gpo_preIter': 50,
+            'gpo_maxIter': 150,
+            'smc_weightdist': "gaussian",
+            'smc_tolLevel': 0.10,
+            'smc_nPart': 2000
+            }
+
+gpo.initPar = settings['gpo_initPar'][0:th.nParInference]
+gpo.upperBounds = settings['gpo_upperBounds'][0:th.nParInference]
+gpo.lowerBounds = settings['gpo_lowerBounds'][0:th.nParInference]
+gpo.maxIter = settings['gpo_maxIter']
+gpo.preIter = settings['gpo_preIter']
+gpo.EstimateHyperparametersInterval = settings['gpo_estHypParInterval']
+
 gpo.verbose = True
-
-gpo.initPar = np.array([0.50, 0.95, 0.14, 1.90])
-gpo.upperBounds = np.array([1.00, 1.00, 0.70, 2.00])
-gpo.lowerBounds = np.array([0.00, 0.00, 0.00, 1.00])
-
-gpo.maxIter = 250
-gpo.preIter = 100
-
 gpo.jitteringCovariance = 0.01 * np.diag(np.ones(th.nParInference))
 gpo.preSamplingMethod = "latinHyperCube"
 
-gpo.EstimateHyperparametersInterval = 50
 gpo.EstimateThHatEveryIteration = False
 gpo.EstimateHessianEveryIteration = False
 
@@ -90,19 +114,17 @@ gpo.EstimateHessianEveryIteration = False
 ##############################################################################
 
 sm.filter = sm.bPFabc
-sm.nPart = 5000
-sm.resampFactor = 2.0
+sm.nPart = settings['smc_nPart']
+sm.weightdist = settings['smc_weightdist']
 
-sm.weightdist = "gaussian"
 sm.rejectionSMC = False
 sm.adaptTolLevel = False
 sm.propAlive = 0.00
-sm.tolLevel = 0.10
+sm.tolLevel = settings['smc_tolLevel']
 
 sm.genInitialState = True
 sm.xo = sys.xo
 th.xo = sys.xo
-
 
 ##############################################################################
 # GPO-ABC using the Particle filter
@@ -115,74 +137,47 @@ Thessian = np.zeros((nRuns, th.nParInference, th.nParInference))
 
 for ii in range(nRuns):
 
-    # Set the seed for re-producibility
-    np.random.seed(87655678 + ii)
-
     # Add noise to data for noisy ABC
     th.makeNoisy(sm)
 
     # Run the GPO routine
     gpo.bayes(sm, sys, th)
 
-    # Write output
-    gpo.writeToFile(
-        sm, fileOutName='results/example2/gpoabc_map_bPF_N2000_3par_run' + str(ii) + '.csv')
-
     # Estimate inverse Hessian and print it to screen
     gpo.estimateHessian()
     Tthhat[ii, :] = gpo.thhat
     Thessian[ii, :, :] = gpo.invHessianEstimate
 
-
-import pandas
-columnlabels = [None] * (th.nParInference)
-columnlabels[0] = 'th0'
-columnlabels[1] = 'th1'
-columnlabels[2] = 'th2'
-columnlabels[3] = 'th3'
-
-fileOut = pandas.DataFrame(Thessian, columns=columnlabels)
-output_file = 'example2-coffee-asvmodel-gpoabc-tthat.csv'
-ensure_dir(output_file)
-fileOut.to_csv(output_file)
-
-for ii in range(nRuns):
-    fileOut = pandas.DataFrame(Thessian[ii, :, :])
-    output_file = 'example2-coffee-asvmodel-gpoabc-thessian-' + str(ii) + '.csv'
-    ensure_dir(output_file)
-    fileOut.to_csv(output_file)
-
-
-#
-#>>> gpo.thhat
-#array([ 0.27777778,  0.91975309,  0.27222222,  1.45061728])
-#>>> gpo.invHessianEstimate
-# array([[ 0.01459183, -0.00029639,  0.00088382,  0.00427282],
-#       [-0.00029639,  0.00150004, -0.00198543,  0.00022116],
-#       [ 0.00088382, -0.00198543,  0.00857372,  0.00161204],
-#       [ 0.00427282,  0.00022116,  0.00161204,  0.00925242]])
-
-# Plot marginals to check for convergence
-# gpo.plotPredictiveMarginals(matrixPlotSide=(2,2))
-
 ##############################################################################
 # # Run state estimation using particle smoother
 ##############################################################################
 
-th.storeParameters((0.27777778,  0.91975309,  0.27222222,  1.45061728), sys)
+th.storeParameters(np.mean(gpo.thhat, axis=0), sys)
 sm.calcGradientFlag = False
 sm.calcHessianFlag = False
+
 sm.nPaths = 50
 sm.nPathsLimit = 10
 sm.ffbsiPS(th)
 
-# Plot the state estimate
-plt.figure(1)
-plt.plot(sys.y)
-plt.plot(sm.xhats)
-
 # Write state estimate to file
 sm.writeToFile()
+
+
+#############################################################################
+# Write results to file
+##############################################################################
+
+ensure_dir(output_file + '-thhat.csv')
+
+# Model parameters
+fileOut = pd.DataFrame(gpo.thhat)
+fileOut.to_csv(output_file + '-model.csv')
+
+# Inverse Hessian estimate
+for ii in range(nRuns):
+    fileOut = pd.DataFrame(gpo.invHessianEstimate[ii, :, :])
+    fileOut.to_csv(output_file + '-modelvar-' + str(ii) + '.csv')
 
 
 ##############################################################################

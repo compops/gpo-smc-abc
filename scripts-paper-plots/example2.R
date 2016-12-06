@@ -189,11 +189,11 @@ for (ii in 0:9)
 hist(dpmh3$th3, breaks = floor(sqrt(dim(dpmh3)[1])), main = "", freq = FALSE, 
     col = rgb(t(col2rgb(plotColors[4]))/256, alpha = 0.25), border = NA, 
     xlab = expression(alpha), ylab = "posterior estimate", xlim = c(1, 
-        2), ylim = c(0, 5))
+        2), ylim = c(0, 8))
 
 # Prior for alpha
 grid <- seq(1, 2, 0.01)
-dist <- dbeta(grid/2, 6, 2)
+dist <- dbeta(grid/2, 20, 2)
 lines(grid, dist, lwd = 1, col = "grey30")
 
 # GPO
