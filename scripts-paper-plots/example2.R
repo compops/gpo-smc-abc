@@ -31,7 +31,7 @@ setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
 ###################################################################################
 
 # Settings for plotting
-nMCMC <- 11000
+nMCMC <- 15000
 burnin <- 5000
 plotM <- seq(burnin, nMCMC, 1)
 

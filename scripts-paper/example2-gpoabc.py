@@ -132,6 +132,7 @@ th.xo = sys.xo
 
 nRuns = 10
 
+Txhats = np.zeros((nRuns, sys.T))
 Tthhat = np.zeros((nRuns, th.nParInference))
 Thessian = np.zeros((nRuns, th.nParInference, th.nParInference))
 
@@ -148,20 +149,15 @@ for ii in range(nRuns):
     Tthhat[ii, :] = gpo.thhat
     Thessian[ii, :, :] = gpo.invHessianEstimate
 
-##############################################################################
-# # Run state estimation using particle smoother
-##############################################################################
+    # Run state estimation using particle smoother
+    th.storeParameters(gpo.thhat, sys)
+    sm.calcGradientFlag = False
+    sm.calcHessianFlag = False
 
-th.storeParameters(np.mean(gpo.thhat, axis=0), sys)
-sm.calcGradientFlag = False
-sm.calcHessianFlag = False
-
-sm.nPaths = 50
-sm.nPathsLimit = 10
-sm.ffbsiPS(th)
-
-# Write state estimate to file
-sm.writeToFile()
+    sm.nPaths = 50
+    sm.nPathsLimit = 10
+    sm.ffbsiPS(th)
+    Txhats[ii, :] = sm.xhats
 
 
 #############################################################################
@@ -179,6 +175,10 @@ for ii in range(nRuns):
     fileOut = pd.DataFrame(gpo.invHessianEstimate[ii, :, :])
     fileOut.to_csv(output_file + '-modelvar-' + str(ii) + '.csv')
 
+# Log-volatility
+for ii in range(nRuns):
+    fileOut = pd.DataFrame(Txhats[ii, :])
+    fileOut.to_csv(output_file + '-volatility-' + str(ii) + '.csv')
 
 ##############################################################################
 ##############################################################################

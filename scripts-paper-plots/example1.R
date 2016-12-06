@@ -33,7 +33,7 @@ setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
 ###################################################################################
 
 # Settings for plotting
-nMCMC = 30000
+nMCMC = 15000
 burnin = 5000
 plotM = seq(burnin, nMCMC, 1)
 
@@ -45,7 +45,7 @@ GPOvar3 = c(0.00852169932, 0.00161496991, 0.00359943216)
 dpmh3 <- read.table("../results/example1/qPMH2_bPF_N2000_3par.csv", header = TRUE, sep = ",")[plotM, ]
 
 # Make plot
-cairo_pdf("example1-comparison-qpmh.pdf", height = 10, width = 8)
+cairo_pdf("example1.pdf", height = 10, width = 8)
 layout(matrix(1:6, 3, 2, byrow = FALSE))
 par(mar = c(4, 5, 1, 1))
 
@@ -62,7 +62,7 @@ hist(dpmh3$th0, breaks = floor(sqrt(dim(dpmh3)[1])), main = "", freq = F,
 
 # Prior for mu
 grid = seq(-0.2, 0.6, 0.01)
-dist = dnorm(grid, 0, 2.0)
+dist = dnorm(grid, 0, 0.2)
 lines(grid, dist, lwd = 1, col = "grey30")
 
 # GPO

@@ -23,6 +23,7 @@ var/
 .installed.cfg
 *.egg
 *.RData
+*.Rhistory
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -66,3 +67,5 @@ node_modules
 *.vsix
 .vscode/symbols.json
 .vscode-test
+
+scripts-paper-plots/.Rhistory
