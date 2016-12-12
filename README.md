@@ -24,21 +24,21 @@ with the parameters {*phi*,*sigma_v*,*sigma_e*}. We assume that *sigma_e* is kno
 We make use of the following settings for the GPO algorithm:
 
 ``` python
-gpo.verbose                         = True;
+gpo.verbose = True
 
-gpo.initPar                         = np.array([ 0.50, 1.00 ])
-gpo.upperBounds                     = np.array([ 0.90, 2.00 ]);
-gpo.lowerBounds                     = np.array([ 0.00, 0.50 ]);
+gpo.initPar = np.array([0.50, 1.00])
+gpo.upperBounds = np.array([0.90, 2.00])
+gpo.lowerBounds = np.array([0.00, 0.50])
 
-gpo.maxIter                         = 100;
-gpo.preIter                         = 50;
+gpo.maxIter = 100
+gpo.preIter = 50
 
-gpo.jitteringCovariance             = 0.01 * np.diag(np.ones(th.nParInference));
-gpo.preSamplingMethod               = "latinHyperCube";
+gpo.jitteringCovariance = 0.01 * np.diag(np.ones(th.nParInference))
+gpo.preSamplingMethod = "latinHyperCube"
 
-gpo.EstimateHyperparametersInterval = 25;
-gpo.EstimateThHatEveryIteration     = False;
-gpo.EstimateHessianEveryIteration   = False;
+gpo.EstimateHyperparametersInterval = 25
+gpo.EstimateThHatEveryIteration = False
+gpo.EstimateHessianEveryIteration = False
 ```
 
 This means that the algorithm writes out its state at every iteration (*gpo.verbose*) and that the parameter space (*gpo.upperBounds* and *gpo.lowerBounds*) is defined by *phi* in [0.00, 0.90] and *sigma_v* in [0.50, 2.00]. The latter is required by the DIRECT algorithm to optimise the acquisition function. If the parameter estimates are on the boundary of the parameter space, you should enlarge the parameter space to obtain good estimates. The initial parameter (*gpo.initPar*) has a minor impact on the estimate and can be chosen as a random point in the parameter space. 
@@ -73,9 +73,9 @@ y_t     = exp( 0.5 * x_t ) * e_t
 where *v_t* and *e_t* are standard Gaussian random variables with correlation *rho*. In this model, we have the parameters {*mu*,*phi*,*sigma_v*,*rho*}. We simulate 1,000 data points using the parameters {0.20,0.90.0.15,-0.70} from the model. We make use of N=100 particles in a bootstrap particle filter and 150 iterations in the GPO algorithm to estimate the parameters {*mu*,*phi*,*sigma_v*}. We make use of the same settings for the GPO algorithm but changes the parameter space to:
 
 ``` python
-gpo.initPar                         = np.array([ 0.20, 0.95, 0.14 ]);
-gpo.upperBounds                     = np.array([ 0.50, 1.00, 0.50 ]);
-gpo.lowerBounds                     = np.array([-0.50, 0.80, 0.05 ]);
+gpo.initPar = np.array([0.20, 0.95, 0.14])
+gpo.upperBounds  = np.array([0.50, 1.00, 0.50])
+gpo.lowerBounds  = np.array([-0.50, 0.80, 0.05])
 ```
 Running the algorithm results in the following output:
 ``` python
@@ -100,20 +100,20 @@ y_t     | x_t ~ A( y_t;     alpha,                   exp(x_t))
 ```
 where *A(y_t,alpha,eta)* denotes a zero-mean alpha stable distribution with stability parameter *alpha* and scale *eta*.  In this model, we have the parameters {*mu*,*phi*,*sigma_v*,*alpha*}. We make use of real-world data in the form of log-returns for the Bitcoin currency in terms of the Euro collected from Quandl < https://www.quandl.com/data/BAVERAGE/EUR-EUR-BITCOIN-Weighted-Price > for the period between September 3, 2013 to September 3, 2014. Note that this period is relatively volatility as the value of the currency crashed in December, 2013. For the GPO algorithm, we make use of the same settings as before and define the parameter space as: 
 ``` python
-gpo.initPar                         = np.array([ 0.20, 0.95, 0.14, 1.8 ]);
-gpo.upperBounds                     = np.array([ 0.50, 1.00, 0.90, 2.0 ]);
-gpo.lowerBounds                     = np.array([-0.50, 0.80, 0.05, 1.2 ]);
+gpo.initPar = np.array([0.20, 0.95, 0.14, 1.8]);
+gpo.upperBounds = np.array([0.50, 1.00, 0.90, 2.0]);
+gpo.lowerBounds = np.array([-0.50, 0.80, 0.05, 1.2]);
 ```
 which is based on prior knowledge that *mu* is close to zero, *phi* is close to one, *sigma_v* is usually between 0.10 and 0.50 and *alpha* is somewhere between one and two. Note that *alpha=2* corresponds to Gaussian returns and *alpha=1* to Cauchy returns. 
 
 We make use of the following settings for the bootstrap particle filter with ABC:
 ``` python
-sm.filter          = sm.bPFabc;
-sm.nPart           = 2000;
-sm.resampFactor    = 2.0;
+sm.filter = sm.bPFabc
+sm.nPart = 2000
+sm.resampFactor = 2.0
 
-sm.weightdist      = "gaussian"
-sm.tolLevel        = 0.10;
+sm.weightdist = "gaussian"
+sm.tolLevel = 0.10
 ```
 This means that 2,000 particles are used (*sm.nPart*) and re-sampling is applied at every step (*sm.resampFactor*) as 2.0 times the number of particles are always larger then the effective sample size (ESS). Hence, if we change 2.0 to 0.5, we re-sample if ESS is less than half of the number of particles. We make use of smooth ABC and apply Gaussian noise to the observations (*sm.weightdist*) with standard deviation 0.10 (*sm.tolLevel*). Uniform noise can also be applied by setting the parameter to *boxcar* with the half-width determined by *sm.tolLevel*. 
 
