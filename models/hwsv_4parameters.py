@@ -334,11 +334,7 @@ class ssm(object):
 
         # Normal prior for mu
         if (self.nParInference >= 1):
-            uu = -1.0
-            while (uu < 0.0):
-                uu = np.random.normal(0.0, 0.20)
-
-            out[0] = uu
+            out[0] = np.random.normal(0.0, 0.20)
 
         # Truncated normal prior for phi (truncation by hard prior)
         if (self.nParInference >= 2):

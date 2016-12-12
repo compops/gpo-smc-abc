@@ -77,7 +77,7 @@ def getOilData():
 # Get the stock data
 ##############################################################################
 
-def getStockData(Test=805):
+def getStockData():
 
     url = urlopen("http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/30_Industry_Portfolios_CSV.zip")
     zipfile = ZipFile(StringIO(url.read()))
@@ -87,6 +87,7 @@ def getStockData(Test=805):
 
     log_returns=np.asarray(data)
     T = log_returns.shape[0]
+    Test = int(np.floor(2 * T / 3))
     nAssets = log_returns.shape[1]
 
     dates = data.index
@@ -165,9 +166,9 @@ def estModel(version, data, settings):
     #=========================================================================
     gpo.verbose = True
 
-    gpo.initPar = settings['gpo_initPar']
-    gpo.upperBounds = settings['gpo_upperBounds']
-    gpo.lowerBounds = settings['gpo_lowerBounds']
+    gpo.initPar = settings['gpo_initPar'][0:th.nParInference]
+    gpo.upperBounds = settings['gpo_upperBounds'][0:th.nParInference]
+    gpo.lowerBounds = settings['gpo_lowerBounds'][0:th.nParInference]
 
     gpo.preIter = settings['gpo_preIter']
     gpo.maxIter = settings['gpo_maxIter']

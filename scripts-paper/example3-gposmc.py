@@ -40,86 +40,86 @@ output_file = 'results/example3/example3-gposmc'
 log_ret, T, Test, nAssets, dates = getOilData()
 
 
-# ##############################################################################
-# # Settings
-# ##############################################################################
+##############################################################################
+# Settings
+##############################################################################
 
-# settings = {'gpo_initPar':     np.array([0.00, 0.95, 0.50]),
-#             'gpo_upperBounds': np.array([5.00, 0.99, 1.00]),
-#             'gpo_lowerBounds': np.array([0.00, 0.00, 0.10]),
-#             'gpo_estHypParInterval': 25,
-#             'gpo_preIter': 50,
-#             'gpo_maxIter': 150,
-#             'smc_nPart': 1000
-#             }
-
-
-# ##############################################################################
-# # Run model inference using estimation data
-# ##############################################################################
-
-# log_vol = np.zeros((Test, nAssets))
-# m = np.zeros((3, nAssets))
-# m_var = np.zeros((3, nAssets))
-
-# for ii in range(nAssets):
-#     log_vol[:, ii], m[:, ii], m_var[:, ii] = estModel(
-#         'GSV', log_ret[0:Test, ii], settings)
-
-# ##############################################################################
-# # Estimate the log-volatility using the model and all data
-# ##############################################################################
-
-# log_vol = np.zeros((T, nAssets))
-
-# for ii in range(nAssets):
-#     log_vol[:, ii] = estVol('GSV', log_ret[0:T, ii], m[:, ii], settings)
+settings = {'gpo_initPar':     np.array([0.00, 0.95, 0.50, 1.80]),
+            'gpo_upperBounds': np.array([1.00, 1.00, 1.00, 2.00]),
+            'gpo_lowerBounds': np.array([0.00, 0.00, 0.01, 1.20]),
+            'gpo_estHypParInterval': 25,
+            'gpo_preIter': 50,
+            'gpo_maxIter': 450,
+            'smc_nPart': 2000
+            }
 
 
-# ##############################################################################
-# # Estimate the Value-at-Risk
-# ##############################################################################
+##############################################################################
+# Run model inference using estimation data
+##############################################################################
 
-# dof, corr, var = estVaR(log_vol, log_ret[:, 0:nAssets], Test, 0.01)
+log_vol = np.zeros((Test, nAssets))
+m = np.zeros((3, nAssets))
+m_var = np.zeros((3, nAssets))
 
-# # Plot the VaR-estimate and the log-returns
-# plt.plot(np.mean(var[10:], axis=1))
-# plt.plot(np.mean(log_ret[10:, 0:nAssets], axis=1), 'k.')
+for ii in range(nAssets):
+    log_vol[:, ii], m[:, ii], m_var[:, ii] = estModel(
+        'GSV', log_ret[0:Test, ii], settings)
 
-# # Count number of violations on validation data
-# np.sum(np.mean(var[Test:], axis=1) >
-#        np.mean(log_ret[Test:, 0:nAssets], axis=1))
+##############################################################################
+# Estimate the log-volatility using the model and all data
+##############################################################################
+
+log_vol = np.zeros((T, nAssets))
+
+for ii in range(nAssets):
+    log_vol[:, ii] = estVol('GSV', log_ret[0:T, ii], m[:, ii], settings)
 
 
-# #############################################################################
-# # Write results to file
-# ##############################################################################
+##############################################################################
+# Estimate the Value-at-Risk
+##############################################################################
 
-# ensure_dir(output_file + '-volatility.csv')
+dof, corr, var = estVaR(log_vol, log_ret[:, 0:nAssets], Test, 0.01)
 
-# # Log-volatility
-# fileOut = pd.DataFrame(log_vol)
-# fileOut.to_csv(output_file + '-volatility.csv')
+# Plot the VaR-estimate and the log-returns
+plt.plot(np.mean(var[10:], axis=1))
+plt.plot(np.mean(log_ret[10:, 0:nAssets], axis=1), 'k.')
 
-# # Model parameters
-# fileOut = pd.DataFrame(m)
-# fileOut.to_csv(output_file + '-model.csv')
+# Count number of violations on validation data
+np.sum(np.mean(var[Test:], axis=1) >
+       np.mean(log_ret[Test:, 0:nAssets], axis=1))
 
-# # Variance of model parameters
-# fileOut = pd.DataFrame(m_var)
-# fileOut.to_csv(output_file + '-modelvar.csv')
 
-# # VaR-estimate
-# fileOut = pd.DataFrame(var)
-# fileOut.to_csv(output_file + '-var.csv')
+#############################################################################
+# Write results to file
+##############################################################################
 
-# # DoF-estimate
-# fileOut = pd.DataFrame(dof)
-# fileOut.to_csv(output_file + '-dof.csv')
+ensure_dir(output_file + '.csv')
 
-# # Spearman correlation-estimate
-# fileOut = pd.DataFrame(corr)
-# fileOut.to_csv(output_file + '-corr.csv')
+# Log-volatility
+fileOut = pd.DataFrame(log_vol)
+fileOut.to_csv(output_file + '-volatility.csv')
+
+# Model parameters
+fileOut = pd.DataFrame(m)
+fileOut.to_csv(output_file + '-model.csv')
+
+# Variance of model parameters
+fileOut = pd.DataFrame(m_var)
+fileOut.to_csv(output_file + '-modelvar.csv')
+
+# VaR-estimate
+fileOut = pd.DataFrame(var)
+fileOut.to_csv(output_file + '-var.csv')
+
+# DoF-estimate
+fileOut = pd.DataFrame(dof)
+fileOut.to_csv(output_file + '-dof.csv')
+
+# Spearman correlation-estimate
+fileOut = pd.DataFrame(corr)
+fileOut.to_csv(output_file + '-corr.csv')
 
 # Log-returns
 fileOut = pd.DataFrame(log_ret, index=dates)

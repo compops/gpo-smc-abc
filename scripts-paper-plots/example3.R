@@ -36,14 +36,15 @@ VaRSMC <- read.table("../results/example3/example3-gposmc-var.csv", header = TRU
                      sep = ",", stringsAsFactors = FALSE)
 
 # Load state (log-volatility) estimates
-xhat <- read.table("../results/example3/example3-gpoabc-volatility.csv", header = TRUE, 
-                   sep = ",")
+xhat <- read.table("../results/example3/example3-gpoabc-volatility.csv", header = TRUE, sep = ",")
+xhat2 <- read.table("../results/example3/example3-gposmc-volatility.csv", header = TRUE, sep = ",")
 
 # Load log-returns
 y <- read.table("../results/example3/example3-gpoabc-returns.csv", header = TRUE, sep = ",")
 
 # Load estimates of model parameters
 m <- read.table("../results/example3/example3-gpoabc-model.csv", header = TRUE, sep = ",")
+m2 <- read.table("../results/example3/example3-gposmc-model.csv", header = TRUE, sep = ",")
 
 T <- dim(y)[1]
 nAssets <- dim(y)[2] - 1
@@ -115,8 +116,8 @@ for (ii in 1:nAssets)
 {
   
   plot(grid, as.numeric(y[,ii+1]), col = plotColors[ii], type = "l", main = "", 
-       bty = "n", xlab = "date", ylab = log_ret_label[ii], ylim = c(-25, 
-                                                                    25), cex.lab = 0.75, cex.axis = 0.75, lwd = 0.75)
+       bty = "n", xlab = "date", ylab = log_ret_label[ii], ylim = c(-25, 25), 
+       cex.lab = 0.75, cex.axis = 0.75, lwd = 0.75)
   
   polygon(c(grid, rev(grid)), c(CI[ii, , 1], rev(CI[ii, , 2])), border = NA, 
           col = rgb(t(col2rgb(plotColors[ii]))/256, alpha = 0.15))

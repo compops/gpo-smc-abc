@@ -36,6 +36,11 @@ VaRSMC <- read.table("../results/example4/example4-gposmc-var.csv", header = TRU
 # Load log-returns
 y <- read.table("../results/example4/example4-gpoabc-returns.csv", header = TRUE, sep = ",")
 
+
+# Load estimates of model parameters
+m <- read.table("../results/example4/example4-gpoabc-model.csv", header = TRUE, sep = ",")
+m2 <- read.table("../results/example4/example4-gposmc-model.csv", header = TRUE, sep = ",")
+
 T <- dim(y)[1]
 nAssets <- dim(y)[2] - 1
 

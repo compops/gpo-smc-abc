@@ -139,14 +139,14 @@ We note that the 95% confidence intervals for the parameter estimates are *mu*: 
 
 **example1-gpoabc.py** Makes use of GPO with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the grey lines (right) when varying the standard deviation of the kernel. 
 
-**example1-qpmh2smc.py** Makes use of quasi-Newton particle Metropolis-Hastings (qPMH2) with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the histograms (left). The qPMH2 algorithm provides the *ground truth* to which we compare the GPO algorithm.
+**example1-pmhsmc.py** Makes use of particle Metropolis-Hastings (PMH) with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the histograms (left). The qPMH2 algorithm provides the *ground truth* to which we compare the GPO algorithm.
 
 **example1-spsa.py** Makes use of the simultaneous perturbation and stochastic approximation (SPSA) algorithm proposed by Spall (1987) < http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=4789489&tag=1 > with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 2.
 
 ### Example 2: Stochastic volatility model with alpha-stable log-returns (Sec. 6.2)
 **example2-gpoabc.py** Makes use of GPO with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the solif lines (middle and lower).
 
-**example2-qpmh2abc.py** Makes use of qPMH2 with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the histograms (middle and lower).
+**example2-pmhabc.py** Makes use of PMH with a bootstrap particle filter with ABC and a Gaussian kernel to estimate the parameters of alpha-stable SV model for log-returns of coffee futures. The results are presented in Figure 3 as the histograms (middle and lower).
 
 ### Example 3: Computing Value-at-Risk for a portfolio of oil futures (Sec. 6.3)
 **example3-gpoabc.py** Estimates a Student's t-copula with SV models with alpha-stable log-returns as the model for each margin. GPO-SMC-ABC is used to estimate the parameters of each marginal model (one for each type of asset). The parameters of the copula model is estimated using a quasi-Newton method and a moment method, see paper for details.

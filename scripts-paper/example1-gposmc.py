@@ -53,7 +53,9 @@ sys.par[3] = 0.00
 
 sys.T = 500
 sys.xo = 0.0
+
 sys.version = "standard"
+sys.transformY = "none"
 
 
 ##############################################################################
@@ -69,7 +71,9 @@ sys.generateData(
 th = hwsv_4parameters.ssm()
 th.nParInference = 3
 th.copyData(sys)
+
 th.version = "standard"
+th.transformY = "none"
 
 
 ##############################################################################
@@ -77,14 +81,14 @@ th.version = "standard"
 ##############################################################################
 
 settings = {'gpo_initPar':     np.array([0.00, 0.95, 0.50, 1.80]),
-            'gpo_upperBounds': np.array([5.00, 0.99, 1.00, 2.00]),
-            'gpo_lowerBounds': np.array([0.00, 0.00, 0.10, 1.20]),
+            'gpo_upperBounds': np.array([1.00, 1.00, 1.00, 2.00]),
+            'gpo_lowerBounds': np.array([0.00, 0.00, 0.01, 1.20]),
             'gpo_estHypParInterval': 25,
             'gpo_preIter': 50,
-            'gpo_maxIter': 150,
+            'gpo_maxIter': 450,
             'smc_weightdist': "gaussian",
             'smc_tolLevel': 0.10,
-            'smc_nPart': 1000
+            'smc_nPart': 2000
             }
 
 gpo.initPar = settings['gpo_initPar'][0:th.nParInference]
@@ -98,8 +102,8 @@ gpo.verbose = True
 gpo.jitteringCovariance = 0.01 * np.diag(np.ones(th.nParInference))
 gpo.preSamplingMethod = "latinHyperCube"
 
-gpo.EstimateThHatEveryIteration = True
-gpo.EstimateHessianEveryIteration = True
+gpo.EstimateThHatEveryIteration = False
+gpo.EstimateHessianEveryIteration = False
 
 
 ##############################################################################
@@ -121,11 +125,7 @@ th.xo = sys.xo
 # Run the GPO routine
 gpo.bayes(sm, sys, th)
 
-# Write output
-gpo.writeToFile(
-    sm, fileOutName='results/example1/gposmc_map_bPF_N1000_3par.csv')
-
-# Estimate inverse Hessian and print it to screen
+# Estimate inverse Hessian
 gpo.estimateHessian()
 
 
@@ -133,7 +133,7 @@ gpo.estimateHessian()
 # Write results to file
 ##############################################################################
 
-ensure_dir(output_file + '-thhat.csv')
+ensure_dir(output_file + '.csv')
 
 # Model parameters
 fileOut = pd.DataFrame(gpo.thhat)
@@ -143,6 +143,22 @@ fileOut.to_csv(output_file + '-model.csv')
 fileOut = pd.DataFrame(gpo.invHessianEstimate)
 fileOut.to_csv(output_file + '-modelvar.csv')
 
+
+##############################################################################
+# GPO using the Particle filter (comparison with SPSA)
+##############################################################################
+
+# Set the seed for re-producibility
+np.random.seed(87655678)
+
+# Run the GPO routine
+settings['gpo_maxIter'] = 700 - settings['gpo_preIter']
+gpo.maxIter = settings['gpo_maxIter']
+gpo.EstimateThHatEveryIteration = True
+gpo.bayes(sm, sys, th)
+
+# Write output
+gpo.writeToFile(sm, fileOutName=output_file + '-run.csv')
 
 ##############################################################################
 ##############################################################################

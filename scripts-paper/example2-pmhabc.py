@@ -18,7 +18,7 @@ import sys
 sys.path.insert(0, '/media/sf_home/src/gpo-abc2015')
 
 # Setup files
-output_file = 'results/example2/example2-pmh'
+output_file = 'results/example2/example2-pmhabc'
 
 # Load packages and helpers
 import quandl
@@ -135,21 +135,21 @@ pmh.stepSize = 2.562 / np.sqrt(th.nParInference)
 pmh.runSampler(sm, sys, th, "pPMH0")
 
 # Write the results to file
-pmh.writeToFile()
-
+pmh.writeToFile(fileOutName=output_file + '-run.csv')
+    
 
 #############################################################################
 # Write results to file
 ##############################################################################
 
-ensure_dir(output_file + '-thhat.csv')
+ensure_dir(output_file + '.csv')
 
 # Model parameters
-fileOut = pd.DataFrame(np.mean(pmh.tho[pmh.nBurnIn:pmh.nIter, :], axis=0))
+fileOut = pd.DataFrame(np.mean(pmh.th[pmh.nBurnIn:pmh.nIter, :], axis=0))
 fileOut.to_csv(output_file + '-model.csv')
 
 # Inverse Hessian estimate
-fileOut = pd.DataFrame(np.cov(pmh.tho[pmh.nBurnIn:pmh.nIter, :]))
+fileOut = pd.DataFrame(np.cov(pmh.th[pmh.nBurnIn:pmh.nIter, :]), rowvar=False)
 fileOut.to_csv(output_file + '-modelvar.csv')
 
 

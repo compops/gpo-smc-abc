@@ -2,7 +2,7 @@
 ###################################################################################
 #
 # Makes plots from the run of the files 
-# scripts-paper/example2-qpmh2abc.py and scripts-paper/example2-gpoabc.py
+# scripts-paper/example2-pmhabc.py and scripts-paper/example2-gpoabc.py
 # The plot shows the estimated log-volatility and the parameter posteriors
 #
 #
@@ -34,24 +34,14 @@ setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
 nMCMC <- 15000
 burnin <- 5000
 plotM <- seq(burnin, nMCMC, 1)
+nRuns <- 9
 
 # Load the data from Quandl
-dCoffee <- Quandl("CHRIS/ICE_KC2", start_date = "2013-06-01", end_date = "2015-01-01", 
-    authcode = "k9SxHYWnsLJNVS_LmS1L")
+dCoffee <- Quandl("CHRIS/ICE_KC2", start_date = "2013-06-01", end_date = "2015-01-01")
 
 # Load data from runs
-GPOthhat <- read.table("../results/example2/example2-coffee-asvmodel-gpoabc-tthat.csv", 
-    header = TRUE, sep = ",")[, -1]
-dpmh3 <- read.table("../results/example2/qPMH2/0.csv", header = TRUE, sep = ",")[plotM, 
-    ]
-
-for (ii in 1:9)
-{
-    d <- read.table(paste(paste("../results/example2/qPMH2/", ii, sep = ""), 
-        ".csv", sep = ""), header = TRUE, sep = ",", stringsAsFactors = FALSE)[plotM, 
-        ]
-    dpmh3 <- rbind(dpmh3, d)
-}
+GPOthhat <- matrix(unlist(read.table("../results/example2/example2-gpoabc-model.csv", header = TRUE, sep = ",")[, -1]), nrow=nRuns+1, ncol=4)
+dpmh3 <- read.table("../results/example2/example2-pmhabc-run.csv", header = TRUE, sep = ",")[plotM, ]
 
 
 ###################################################################################
@@ -59,14 +49,12 @@ for (ii in 1:9)
 # The stability parameters are inferred in the GPO-step
 ###################################################################################
 
-d <- read.table("../results/example2/state_abcPF_bPF-ABC_N5000.csv", header = TRUE, 
-    sep = ",")
+d <- read.table("../results/example2/example2-gpoabc-volatility-0.csv", header = TRUE, sep = ",")
 
-CI <- matrix(0, nrow = length(d$xhats), ncol = 2)
-for (ii in 1:length(d$xhats))
+CI <- matrix(0, nrow = length(d$X0), ncol = 2)
+for (ii in 1:length(d$X0))
 {
-    CI[ii, ] <- qstable(c(0.025, 0.975), mean(GPOthhat$th3), 0, exp(0.5 * 
-        d$xhats[ii]), 0)
+    CI[ii, ] <- qstable(c(0.025, 0.975), GPOthhat[1,4], 0, exp(0.5 * d$X0[ii]), 0)
 }
 
 
@@ -74,7 +62,7 @@ for (ii in 1:length(d$xhats))
 # Make the plots
 ###################################################################################
 
-cairo_pdf('example2.pdf', height = 10, width = 8)
+cairo_pdf('example2-posteriors.pdf', height = 10, width = 8)
 layout(matrix(c(1, 1, 2, 3, 4, 5), 3, 2, byrow = TRUE))
 par(mar = c(4, 4, 1, 4.5))
 
@@ -98,8 +86,8 @@ polygon(c(grid, rev(grid)), c(CI[, 1], rev(CI[, 2])), border = NA, col = rgb(t(c
     alpha = 0.15))
 
 par(new = TRUE)
-plot(grid, d$xhats, lwd = 1.5, col = "grey30", type = "l", xaxt = "n", 
-    yaxt = "n", xlab = "", ylab = "", bty = "n", ylim = c(-1, 3))
+plot(grid, d$X0, lwd = 1.5, col = "grey30", type = "l", xaxt = "n", 
+    yaxt = "n", xlab = "", ylab = "", bty = "n", ylim = c(-2, 2))
 axis(4)
 mtext("smoothed log-volatility", side = 4, line = 3, cex = 0.75)
 
@@ -123,9 +111,9 @@ lines(grid, dist, lwd = 1, col = "grey30")
 # GPO
 grid <- seq(-0.4, 0.8, 0.01)
 
-for (ii in 0:9)
+for (ii in 0:nRuns)
 {
-    GPOhessian <- read.table(paste(paste("../results/example2/example2-coffee-asvmodel-gpoabc-thessian-", 
+    GPOhessian <- read.table(paste(paste("../results/example2/example2-gpoabc-modelvar-", 
         ii, sep = ""), ".csv", sep = ""), header = TRUE, sep = ",")[, -1]
     dist <- dnorm(grid, GPOthhat[ii + 1, 1], sqrt(GPOhessian[1, 1]))
     lines(grid, dist, lwd = 1, col = plotColors[1])
@@ -148,9 +136,9 @@ lines(grid, dist, lwd = 1, col = "grey30")
 
 # GPO
 grid <- seq(0.75, 1, 0.01)
-for (ii in 0:9)
+for (ii in 0:nRuns)
 {
-    GPOhessian <- read.table(paste(paste("../results/example2/example2-coffee-asvmodel-gpoabc-thessian-", 
+  GPOhessian <- read.table(paste(paste("../results/example2/example2-gpoabc-modelvar-", 
         ii, sep = ""), ".csv", sep = ""), header = TRUE, sep = ",")[, -1]
     dist <- dnorm(grid, GPOthhat[ii + 1, 2], sqrt(GPOhessian[2, 2]))
     lines(grid, dist, lwd = 1, col = plotColors[2])
@@ -173,9 +161,9 @@ lines(grid, dist, lwd = 1, col = "grey30")
 
 # GPO
 grid <- seq(0, 0.7, 0.01)
-for (ii in 0:9)
+for (ii in 0:nRuns)
 {
-    GPOhessian <- read.table(paste(paste("../results/example2/example2-coffee-asvmodel-gpoabc-thessian-", 
+  GPOhessian <- read.table(paste(paste("../results/example2/example2-gpoabc-modelvar-", 
         ii, sep = ""), ".csv", sep = ""), header = TRUE, sep = ",")[, -1]
     dist <- dnorm(grid, GPOthhat[ii + 1, 3], sqrt(GPOhessian[3, 3]))
     lines(grid, dist, lwd = 1, col = plotColors[3])
@@ -198,9 +186,9 @@ lines(grid, dist, lwd = 1, col = "grey30")
 
 # GPO
 grid <- seq(1, 2, 0.01)
-for (ii in 0:9)
+for (ii in 0:nRuns)
 {
-    GPOhessian <- read.table(paste(paste("../results/example2/example2-coffee-asvmodel-gpoabc-thessian-", 
+  GPOhessian <- read.table(paste(paste("../results/example2/example2-gpoabc-modelvar-", 
         ii, sep = ""), ".csv", sep = ""), header = TRUE, sep = ",")[, -1]
     dist <- dnorm(grid, GPOthhat[ii + 1, 4], sqrt(GPOhessian[4, 4]))
     lines(grid, dist, lwd = 1, col = plotColors[4])

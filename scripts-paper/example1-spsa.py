@@ -108,7 +108,7 @@ out = out.transpose()
 # Write results to file
 ##############################################################################
 
-ensure_dir(output_file + '-thhat.csv')
+ensure_dir(output_file + '.csv')
 
 # Model parameters
 fileOut = pd.DataFrame(out)

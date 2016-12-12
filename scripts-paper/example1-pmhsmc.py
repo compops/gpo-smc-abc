@@ -17,7 +17,7 @@ import sys
 sys.path.insert(0, '/media/sf_home/src/gpo-abc2015')
 
 # Setup files
-output_file = 'results/example1/example1-pmh'
+output_file = 'results/example1/example1-pmhsmc'
 
 # Load packages and helpers
 import numpy as np
@@ -94,9 +94,9 @@ pmh.nBurnIn = 5000
 pmh.initPar = (0.10, 0.95, 0.12)
 
 # Set the pre-conditioning matrix from initial run
-pmh.invHessian = np.matrix([[0.0137448825, -0.0011175262,  0.0006854814],
+pmh.invHessian = np.matrix([[ 0.0137448825, -0.0011175262,  0.0006854814],
                             [-0.0011175262,  0.0007471863, -0.0011258477],
-                            [0.0006854814, 0.0011258477, 0.0037545209]])
+                            [ 0.0006854814,  0.0011258477,  0.0037545209]])
 
 # Use only the diagonal, off-diagonal elements can be poorly estimated by GPO
 pmh.invHessian = np.diag(np.diag(pmh.invHessian)[0:th.nParInference])
@@ -113,22 +113,23 @@ pmh.stepSize = 2.562 / np.sqrt(th.nParInference)
 pmh.runSampler(sm, sys, th, "pPMH0")
 
 # Write the results to file
-pmh.writeToFile(fileOutName='results/example1/pmh_bPF_N2000_3par.csv')
-
+pmh.writeToFile(fileOutName=output_file + '-run.csv')
+    
 
 #############################################################################
 # Write results to file
 ##############################################################################
 
-ensure_dir(output_file + '-thhat.csv')
+ensure_dir(output_file + '.csv')
 
 # Model parameters
 fileOut = pd.DataFrame(np.mean(pmh.th[pmh.nBurnIn:pmh.nIter, :], axis=0))
 fileOut.to_csv(output_file + '-model.csv')
 
 # Inverse Hessian estimate
-fileOut = pd.DataFrame(np.cov(pmh.th[pmh.nBurnIn:pmh.nIter, :]))
+fileOut = pd.DataFrame(np.cov(pmh.th[pmh.nBurnIn:pmh.nIter, :]), rowvar=False)
 fileOut.to_csv(output_file + '-modelvar.csv')
+
 
 
 ##############################################################################

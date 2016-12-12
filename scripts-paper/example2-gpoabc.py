@@ -84,11 +84,11 @@ th.copyData(sys)
 ##############################################################################
 
 settings = {'gpo_initPar':     np.array([0.00, 0.95, 0.50, 1.80]),
-            'gpo_upperBounds': np.array([5.00, 0.99, 1.00, 2.00]),
-            'gpo_lowerBounds': np.array([0.00, 0.00, 0.10, 1.20]),
+            'gpo_upperBounds': np.array([1.00, 1.00, 1.00, 2.00]),
+            'gpo_lowerBounds': np.array([0.00, 0.00, 0.01, 1.20]),
             'gpo_estHypParInterval': 25,
             'gpo_preIter': 50,
-            'gpo_maxIter': 150,
+            'gpo_maxIter': 450,
             'smc_weightdist': "gaussian",
             'smc_tolLevel': 0.10,
             'smc_nPart': 2000
@@ -156,23 +156,24 @@ for ii in range(nRuns):
 
     sm.nPaths = 50
     sm.nPathsLimit = 10
+    sm.rho = 2.0
     sm.ffbsiPS(th)
-    Txhats[ii, :] = sm.xhats
+    Txhats[ii, :] = sm.xhats[:,0]
 
 
 #############################################################################
 # Write results to file
 ##############################################################################
 
-ensure_dir(output_file + '-thhat.csv')
+ensure_dir(output_file + '.csv')
 
 # Model parameters
-fileOut = pd.DataFrame(gpo.thhat)
+fileOut = pd.DataFrame(Tthhat)
 fileOut.to_csv(output_file + '-model.csv')
 
 # Inverse Hessian estimate
 for ii in range(nRuns):
-    fileOut = pd.DataFrame(gpo.invHessianEstimate[ii, :, :])
+    fileOut = pd.DataFrame(Thessian[ii, :, :])
     fileOut.to_csv(output_file + '-modelvar-' + str(ii) + '.csv')
 
 # Log-volatility
