@@ -160,4 +160,8 @@ This folder contains scripts to reproduce the results in the current version of 
 **example4-gposmc.py** Estimates a Student's t-copula with SV models with Gaussian log-returns as the model for each margin. GPO-SMC is used to estimate the parameters of each marginal model (one for each type of asset). The parameters of the copula model is estimated using a quasi-Newton method and a moment method, see paper for details.
 
 ## Replication scripts for figures in paper (scripts-paper-plots)
-These R scripts (one for each of the four examples) reproduces the plots in Figures 2-7 in the paper. The scripts make use of the output from the runs of each example, which also are provided in the **results-paper**-folder in this repo. Some dependencies are required to generate the plots, running "install.packages(c("Quandl","RColorBrewer","stabledist","copula","zoo"))" should install all required libraries. 
+These R scripts (one for each of the four examples) reproduces the plots in Figures 2-7 in the paper. The scripts make use of the output from the runs of each example, which also are provided in the **results-paper**-folder in this repo. Some dependencies are required to generate the plots, running 
+``` R
+install.packages(c("Quandl","RColorBrewer","stabledist","copula","zoo")) 
+```
+should install all required libraries. 
