@@ -24,7 +24,7 @@ library("RColorBrewer")
 plotColors = brewer.pal(6, "Dark2");
 
 # Change the working directory to be correct on your system
-setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
+# setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
 
 
 ###################################################################################
@@ -38,9 +38,9 @@ burnin = 5000
 plotM = seq(burnin, nMCMC, 1)
 
 # Load data and models
-dpmh3 <- read.table("../results/example1/example1-pmhsmc-run.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)[plotM, ]
-mgpo  <- read.table("../results/example1/example1-gposmc-model.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
-mgpov <- read.table("../results/example1/example1-gposmc-modelvar.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+dpmh3 <- read.table("../results-paper/example1/example1-pmhsmc-run.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)[plotM, ]
+mgpo  <- read.table("../results-paper/example1/example1-gposmc-model.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+mgpov <- read.table("../results-paper/example1/example1-gposmc-modelvar.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
 thhat_gposmc = mgpo$X0
 var_gposmc = diag(matrix(unlist(mgpov[,-1]), nrow = length(thhat_gposmc)))
@@ -123,10 +123,10 @@ lines(grid, dist, lwd = 1, col = plotColors[3])
 thhat_gpoabc = matrix(0, nrow = 5, ncol = length(thhat_gposmc))
 var_gpoabc = matrix(0, nrow = 5, ncol = length(thhat_gposmc))
 
-mgpo  <- read.table("../results/example1/example1-gpoabc-model.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+mgpo  <- read.table("../results-paper/example1/example1-gpoabc-model.csv", header = TRUE, sep = ",", stringsAsFactors = FALSE)
 
 for (ii in 1:5) {
-  file_name = paste(paste("../results/example1/example1-gpoabc-modelvar-", ii-1, sep = ""), '.csv', sep = "")
+  file_name = paste(paste("../results-paper/example1/example1-gpoabc-modelvar-", ii-1, sep = ""), '.csv', sep = "")
   mgpov <- read.table(file_name, header = TRUE, sep = ",", stringsAsFactors = FALSE)
   
   thhat_gpoabc[ii,] = matrix(unlist(mgpo[,-1]), nrow = 5)[ii,]
@@ -214,8 +214,8 @@ dev.off()
 nIter = 700
 
 # Load data from runs
-dgpo3 <- read.table("../results/example1/example1-gposmc-run.csv", header = TRUE, sep = ",")
-dspsa <- read.table("../results/example1/example1-spsa-model.csv", header = TRUE, sep = ",")[, -1]
+dgpo3 <- read.table("../results-paper/example1/example1-gposmc-run.csv", header = TRUE, sep = ",")
+dspsa <- read.table("../results-paper/example1/example1-spsa-model.csv", header = TRUE, sep = ",")[, -1]
 
 # Make plot
 cairo_pdf("example1-spsa.pdf", height = 3, width = 8)

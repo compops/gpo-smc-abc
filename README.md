@@ -3,7 +3,7 @@ This code was downloaded from < https://github.com/compops/gpo-abc2015 > and con
 
 J. Dahlin, M. Villani and  T. B. Schön, **Bayesian optimisation for fast approximate inference in state-space models with intractable likelihoods**. Pre-print, arXiv:1506.06975v2, 2015.
 
-The paper is available as a preprint from < http://arxiv.org/pdf/1506.06975 > and < http://liu.johandahlin.com/ >.
+The paper is available as a preprint from < http://arxiv.org/pdf/1506.06975 > and < http://liu.johandahlin.com/ >. The repo also contains the output from the runs used to produce all the results in the paper.
 
 ## Dependencies
 
@@ -133,6 +133,7 @@ gpo.estimateHessian()
 We note that the 95% confidence intervals for the parameter estimates are *mu*: [-0.227, 0.524], *phi*: [0.918, 0.981], *sigma_v*: [0.459, 0.785] and *alpha*: [1.377, 1.704]. This corresponds to a log-volatility with a large autocorrelation and fairly large innovations and heavy-tailed log-returns. The script also estimates the log-volatility and the estimate seems reasonable when comparing with the log-observations.
 
 ## Replication scripts for paper (scripts-paper)
+This folder contains scripts to reproduce the results in the current version of the paper. The output corresponding to the run of these scripts are found in **results-paper**.
 
 ### Example 1: Stochastic volatility model with Gaussian log-returns (Sec 6.1)
 **example1-gposmc.py** Makes use of GPO with a standard bootstrap particle filter to estimate the parameters of a SV model with synthetic data. The results are presented in Figure 1 as the solid lines (left) and the solid area (right). 
@@ -159,4 +160,4 @@ We note that the 95% confidence intervals for the parameter estimates are *mu*: 
 **example4-gposmc.py** Estimates a Student's t-copula with SV models with Gaussian log-returns as the model for each margin. GPO-SMC is used to estimate the parameters of each marginal model (one for each type of asset). The parameters of the copula model is estimated using a quasi-Newton method and a moment method, see paper for details.
 
 ## Replication scripts for figures in paper (scripts-paper-plots)
-These R scripts (one for each of the four examples) reproduces the plots in Figures 2-7 in the paper. The scripts make use of the output from the runs of each example, which also are provided in the results-folder in this repo. Some dependencies are required to generate the plots, running "install.packages(c("Quandl","RColorBrewer","stabledist","copula","zoo"))" should install all required libraries. 
+These R scripts (one for each of the four examples) reproduces the plots in Figures 2-7 in the paper. The scripts make use of the output from the runs of each example, which also are provided in the **results-paper**-folder in this repo. Some dependencies are required to generate the plots, running "install.packages(c("Quandl","RColorBrewer","stabledist","copula","zoo"))" should install all required libraries. 

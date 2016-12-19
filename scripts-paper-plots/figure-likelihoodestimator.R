@@ -21,14 +21,14 @@ library("RColorBrewer")
 plotColors = brewer.pal(6, "Dark2");
 
 # Change the working directory to be correct on your system
-setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
+# setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
 
 ###################################################################################
 # Make plot
 ###################################################################################
 
-llGrid = read.table("../results/likelihoodfig/figure-likelihoodestimator-grid.csv", sep = ",", header = TRUE)
-llRep = read.table("../results/likelihoodfig/figure-likelihoodestimator-histogram.csv", sep = ",", header = TRUE)
+llGrid = read.table("../results-paper/likelihoodfig/figure-likelihoodestimator-grid.csv", sep = ",", header = TRUE)
+llRep = read.table("../results-paper/likelihoodfig/figure-likelihoodestimator-histogram.csv", sep = ",", header = TRUE)
 
 cairo_pdf('figure-likelihoodestimator.pdf', height = 3, width = 9)
 layout(matrix(c(1, 2, 3), 1, 3, byrow = TRUE))

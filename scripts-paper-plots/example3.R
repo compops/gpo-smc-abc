@@ -22,7 +22,7 @@ library("RColorBrewer")
 plotColors <- brewer.pal(8, "Dark2")
 
 # Change the working directory to be correct on your system
-setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
+# setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
 
 
 ###################################################################################
@@ -30,21 +30,21 @@ setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
 ###################################################################################
 
 # Load Value-at-Risk estimates
-VaRABC <- read.table("../results/example3/example3-gpoabc-var.csv", header = TRUE, 
+VaRABC <- read.table("../results-paper/example3/example3-gpoabc-var.csv", header = TRUE, 
                      sep = ",", stringsAsFactors = FALSE)
-VaRSMC <- read.table("../results/example3/example3-gposmc-var.csv", header = TRUE, 
+VaRSMC <- read.table("../results-paper/example3/example3-gposmc-var.csv", header = TRUE, 
                      sep = ",", stringsAsFactors = FALSE)
 
 # Load state (log-volatility) estimates
-xhat <- read.table("../results/example3/example3-gpoabc-volatility.csv", header = TRUE, sep = ",")
-xhat2 <- read.table("../results/example3/example3-gposmc-volatility.csv", header = TRUE, sep = ",")
+xhat <- read.table("../results-paper/example3/example3-gpoabc-volatility.csv", header = TRUE, sep = ",")
+xhat2 <- read.table("../results-paper/example3/example3-gposmc-volatility.csv", header = TRUE, sep = ",")
 
 # Load log-returns
-y <- read.table("../results/example3/example3-gpoabc-returns.csv", header = TRUE, sep = ",")
+y <- read.table("../results-paper/example3/example3-gpoabc-returns.csv", header = TRUE, sep = ",")
 
 # Load estimates of model parameters
-m <- read.table("../results/example3/example3-gpoabc-model.csv", header = TRUE, sep = ",")
-m2 <- read.table("../results/example3/example3-gposmc-model.csv", header = TRUE, sep = ",")
+m <- read.table("../results-paper/example3/example3-gpoabc-model.csv", header = TRUE, sep = ",")
+m2 <- read.table("../results-paper/example3/example3-gposmc-model.csv", header = TRUE, sep = ",")
 
 T <- dim(y)[1]
 nAssets <- dim(y)[2] - 1

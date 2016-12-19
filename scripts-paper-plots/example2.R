@@ -23,7 +23,7 @@ library("RColorBrewer")
 plotColors = brewer.pal(6, "Dark2");
 
 # Change the working directory to be correct on your system
-setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
+# setwd("C:/home/src/gpo-abc2015/scripts-paper-plots")
 
 
 ###################################################################################
@@ -40,8 +40,8 @@ nRuns <- 9
 dCoffee <- Quandl("CHRIS/ICE_KC2", start_date = "2013-06-01", end_date = "2015-01-01")
 
 # Load data from runs
-GPOthhat <- matrix(unlist(read.table("../results/example2/example2-gpoabc-model.csv", header = TRUE, sep = ",")[, -1]), nrow=nRuns+1, ncol=4)
-dpmh3 <- read.table("../results/example2/example2-pmhabc-run.csv", header = TRUE, sep = ",")[plotM, ]
+GPOthhat <- matrix(unlist(read.table("../results-paper/example2/example2-gpoabc-model.csv", header = TRUE, sep = ",")[, -1]), nrow=nRuns+1, ncol=4)
+dpmh3 <- read.table("../results-paper/example2/example2-pmhabc-run.csv", header = TRUE, sep = ",")[plotM, ]
 
 
 ###################################################################################
@@ -49,7 +49,7 @@ dpmh3 <- read.table("../results/example2/example2-pmhabc-run.csv", header = TRUE
 # The stability parameters are inferred in the GPO-step
 ###################################################################################
 
-d <- read.table("../results/example2/example2-gpoabc-volatility-0.csv", header = TRUE, sep = ",")
+d <- read.table("../results-paper/example2/example2-gpoabc-volatility-0.csv", header = TRUE, sep = ",")
 
 CI <- matrix(0, nrow = length(d$X0), ncol = 2)
 for (ii in 1:length(d$X0))
@@ -113,7 +113,7 @@ grid <- seq(-0.4, 0.8, 0.01)
 
 for (ii in 0:nRuns)
 {
-    GPOhessian <- read.table(paste(paste("../results/example2/example2-gpoabc-modelvar-", 
+    GPOhessian <- read.table(paste(paste("../results-paper/example2/example2-gpoabc-modelvar-", 
         ii, sep = ""), ".csv", sep = ""), header = TRUE, sep = ",")[, -1]
     dist <- dnorm(grid, GPOthhat[ii + 1, 1], sqrt(GPOhessian[1, 1]))
     lines(grid, dist, lwd = 1, col = plotColors[1])
@@ -138,7 +138,7 @@ lines(grid, dist, lwd = 1, col = "grey30")
 grid <- seq(0.75, 1, 0.01)
 for (ii in 0:nRuns)
 {
-  GPOhessian <- read.table(paste(paste("../results/example2/example2-gpoabc-modelvar-", 
+  GPOhessian <- read.table(paste(paste("../results-paper/example2/example2-gpoabc-modelvar-", 
         ii, sep = ""), ".csv", sep = ""), header = TRUE, sep = ",")[, -1]
     dist <- dnorm(grid, GPOthhat[ii + 1, 2], sqrt(GPOhessian[2, 2]))
     lines(grid, dist, lwd = 1, col = plotColors[2])
@@ -163,7 +163,7 @@ lines(grid, dist, lwd = 1, col = "grey30")
 grid <- seq(0, 0.7, 0.01)
 for (ii in 0:nRuns)
 {
-  GPOhessian <- read.table(paste(paste("../results/example2/example2-gpoabc-modelvar-", 
+  GPOhessian <- read.table(paste(paste("../results-paper/example2/example2-gpoabc-modelvar-", 
         ii, sep = ""), ".csv", sep = ""), header = TRUE, sep = ",")[, -1]
     dist <- dnorm(grid, GPOthhat[ii + 1, 3], sqrt(GPOhessian[3, 3]))
     lines(grid, dist, lwd = 1, col = plotColors[3])
@@ -188,7 +188,7 @@ lines(grid, dist, lwd = 1, col = "grey30")
 grid <- seq(1, 2, 0.01)
 for (ii in 0:nRuns)
 {
-  GPOhessian <- read.table(paste(paste("../results/example2/example2-gpoabc-modelvar-", 
+  GPOhessian <- read.table(paste(paste("../results-paper/example2/example2-gpoabc-modelvar-", 
         ii, sep = ""), ".csv", sep = ""), header = TRUE, sep = ",")[, -1]
     dist <- dnorm(grid, GPOthhat[ii + 1, 4], sqrt(GPOhessian[4, 4]))
     lines(grid, dist, lwd = 1, col = plotColors[4])
