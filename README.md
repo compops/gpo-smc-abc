@@ -7,7 +7,11 @@ The paper is available as a preprint from < http://arxiv.org/pdf/1506.06975 > an
 
 ## Dependencies
 
-The code is written and tested for Python 2.7.12. The implementation makes use of NumPy 1.11.1rc1, SciPy 0.17.1, Matplotlib 1.5.2rc1, Pandas 0.17.1, GPy 1.5.6, pyDOE 0.3.8, sobol 0.9, numdifftools 0.9.17 and DIRECT 1.0.1. Please have these packages installed, on Ubuntu they can be installed using "sudo pip install --upgrade package-name ". For more information about, the GPy package see < https://sheffieldml.github.io/GPy/ > and the DIRECT package see < http://pythonhosted.org/DIRECT/ >
+The code is written and tested for Python 2.7.12. The implementation makes use of NumPy 1.11.1rc1, SciPy 0.17.1, Matplotlib 1.5.2rc1, Pandas 0.17.1, GPy 1.5.6, pyDOE 0.3.8, sobol 0.9, numdifftools 0.9.17 and DIRECT 1.0.1. Please have these packages installed, on Ubuntu they can be installed using 
+``` bash
+sudo pip install --upgrade package-name
+``` 
+For more information about, the GPy package see < https://sheffieldml.github.io/GPy/ > and the DIRECT package see < http://pythonhosted.org/DIRECT/ >
 
 ## Minimal working examples (scripts-mwe)
 
@@ -53,14 +57,14 @@ Running the algorithm results in the following output:
 ``` python
 # Parameter estimates
 gpo.thhat
-# array([ 0.49938272,  1.01131687])
+# array([0.49938272,  1.01131687])
 
 # Estimate of inverse Hessian
 gpo.estimateHessian()
 
 # Compute half-length of 95% confidence intervals
-1.96*np.sqrt(np.diag(gpo.invHessianEstimate))
-# array([ 0.03792376,  0.03140083])
+1.96 * np.sqrt(np.diag(gpo.invHessianEstimate))
+# array([0.03792376,  0.03140083])
 ```
 We note that the 95% confidence intervals for the parameter estimates are *phi*: [0.461, 0.537] and *sigma_v*: [0.980, 1.043], which contain the parameters used to generate the data.
 
@@ -74,21 +78,21 @@ where *v_t* and *e_t* are standard Gaussian random variables with correlation *r
 
 ``` python
 gpo.initPar = np.array([0.20, 0.95, 0.14])
-gpo.upperBounds  = np.array([0.50, 1.00, 0.50])
-gpo.lowerBounds  = np.array([-0.50, 0.80, 0.05])
+gpo.upperBounds = np.array([0.50, 1.00, 0.50])
+gpo.lowerBounds = np.array([-0.50, 0.80, 0.05])
 ```
 Running the algorithm results in the following output:
 ``` python
 # Parameter estimates
 gpo.thhat
-# array([ 0.2345679 ,  0.91975309,  0.14166667])
+# array([0.2345679 ,  0.91975309,  0.14166667])
 
 # Estimate of inverse Hessian
 gpo.estimateHessian()
 
 # Compute half-length of 95% confidence intervals
-1.96*np.sqrt(np.diag(gpo.invHessianEstimate))
-# array([ 0.12445807,  0.04638067,  0.05792237])
+1.96 * np.sqrt(np.diag(gpo.invHessianEstimate))
+# array([0.12445807,  0.04638067,  0.05792237])
 ```
 We note that the 95% confidence intervals for the parameter estimates are *mu*: [0.110, 0.359], *phi*: [0.873, 0.966] and *sigma_v*: [0.08, 0.200], which contain the parameters used to generate the data.
 
@@ -100,9 +104,9 @@ y_t     | x_t ~ A( y_t;     alpha,                   exp(x_t))
 ```
 where *A(y_t,alpha,eta)* denotes a zero-mean alpha stable distribution with stability parameter *alpha* and scale *eta*.  In this model, we have the parameters {*mu*,*phi*,*sigma_v*,*alpha*}. We make use of real-world data in the form of log-returns for the Bitcoin currency in terms of the Euro collected from Quandl < https://www.quandl.com/data/BAVERAGE/EUR-EUR-BITCOIN-Weighted-Price > for the period between September 3, 2013 to September 3, 2014. Note that this period is relatively volatility as the value of the currency crashed in December, 2013. For the GPO algorithm, we make use of the same settings as before and define the parameter space as: 
 ``` python
-gpo.initPar = np.array([0.20, 0.95, 0.14, 1.8]);
-gpo.upperBounds = np.array([0.50, 1.00, 0.90, 2.0]);
-gpo.lowerBounds = np.array([-0.50, 0.80, 0.05, 1.2]);
+gpo.initPar = np.array([0.20, 0.95, 0.14, 1.8])
+gpo.upperBounds = np.array([0.50, 1.00, 0.90, 2.0])
+gpo.lowerBounds = np.array([-0.50, 0.80, 0.05, 1.2])
 ```
 which is based on prior knowledge that *mu* is close to zero, *phi* is close to one, *sigma_v* is usually between 0.10 and 0.50 and *alpha* is somewhere between one and two. Note that *alpha=2* corresponds to Gaussian returns and *alpha=1* to Cauchy returns. 
 
@@ -121,14 +125,14 @@ Running the algorithm results in the following output:
 ``` python
 # Parameter estimates
 gpo.thhat
-# array([ 0.14814815,  0.94938272,  0.62191358,  1.54074074])
+# array([0.14814815,  0.94938272,  0.62191358,  1.54074074])
 
 # Estimate of inverse Hessian
 gpo.estimateHessian()
 
 # Compute half-length of 95% confidence intervals
-1.96*np.sqrt(np.diag(gpo.invHessianEstimate))
-# array([ 0.37539896,  0.03176862,  0.16280434,  0.1632567 ])
+1.96 * np.sqrt(np.diag(gpo.invHessianEstimate))
+# array([0.37539896,  0.03176862,  0.16280434,  0.1632567])
 ```
 We note that the 95% confidence intervals for the parameter estimates are *mu*: [-0.227, 0.524], *phi*: [0.918, 0.981], *sigma_v*: [0.459, 0.785] and *alpha*: [1.377, 1.704]. This corresponds to a log-volatility with a large autocorrelation and fairly large innovations and heavy-tailed log-returns. The script also estimates the log-volatility and the estimate seems reasonable when comparing with the log-observations.
 
@@ -162,6 +166,6 @@ This folder contains scripts to reproduce the results in the current version of 
 ## Replication scripts for figures in paper (scripts-paper-plots)
 These R scripts (one for each of the four examples) reproduces the plots in Figures 2-7 in the paper. The scripts make use of the output from the runs of each example, which also are provided in the **results-paper**-folder in this repo. Some dependencies are required to generate the plots, running 
 ``` R
-install.packages(c("Quandl","RColorBrewer","stabledist","copula","zoo")) 
+install.packages(c("Quandl", "RColorBrewer", "stabledist", "copula", "zoo")) 
 ```
 should install all required libraries. 
