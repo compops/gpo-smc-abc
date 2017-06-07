@@ -1,9 +1,9 @@
-# gpo-abc2015
-This code was downloaded from < https://github.com/compops/gpo-abc2015 > and contains the code used to produce the results in
+# gpo-smc-abc
+This code was downloaded from < https://github.com/compops/gpo-smc-abc > and contains the code used to produce the results in
 
-J. Dahlin, M. Villani and  T. B. Schön, **Bayesian optimisation for fast approximate inference in state-space models with intractable likelihoods**. Pre-print, arXiv:1506.06975v2, 2015.
+J. Dahlin, M. Villani and  T. B. Schön, **Bayesian optimisation for fast approximate inference in state-space models with intractable likelihoods**. Pre-print, arXiv:1506.06975v3, 2015.
 
-The paper is available as a preprint from < http://arxiv.org/pdf/1506.06975 > and < http://liu.johandahlin.com/ >. The repo also contains the output from the runs used to produce all the results in the paper.
+The paper is available as a preprint from < http://arxiv.org/pdf/1506.06975 > and < http://work.johandahlin.com/ >. The repo also contains the output from the runs used to produce all the results in the paper.
 
 ## Dependencies
 
