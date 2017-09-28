@@ -3,7 +3,7 @@ This code was downloaded from < https://github.com/compops/gpo-smc-abc > and con
 
 J. Dahlin, M. Villani and  T. B. Schön, **Bayesian optimisation for fast approximate inference in state-space models with intractable likelihoods**. Pre-print, arXiv:1506.06975v3, 2017.
 
-The paper is available as a preprint from < http://arxiv.org/pdf/1506.06975 > and < http://work.johandahlin.com/ >. The repo also contains the output from the runs used to produce all the results in the paper.
+The paper is available as a preprint from < http://arxiv.org/pdf/1506.06975 > and < http://research.johandahlin.com/ >. The repo also contains the output from the runs used to produce all the results in the paper.
 
 ## Dependencies
 
